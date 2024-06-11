@@ -4,7 +4,9 @@
 */
 
 :root {
-	--quiz-color-primary: #31b7bc;
+	--quiz-color-primary: rgb(49, 183, 188);
+	--quiz-color-primary-rgb: 49, 183, 188;
+	--quiz-opacity: 0.3;
 }
 
 #app {
@@ -106,7 +108,8 @@ body {
   /* width: 100%; */
   height: 4px;
   overflow: hidden;
-  background-color: rgba(49,183,188,.3);
+  background-color: rgba( var(--quiz-color-primary-rgb), var(--quiz-opacity)); 
+	/* rgba(49,183,188,.3); */
 
 	/* Левый и правый ьфкпшт устанавливаются как отступ у контейнера */
 	margin: 0 1rem;
@@ -115,7 +118,7 @@ body {
 .quiz-progress .value {
   height: 100%;
   width: 0;
-  background-color: var(--quiz-color-primary);
+  background-color: rgb(var(--quiz-color-primary-rgb));
   transition: all 0.4s ease 0s;
 }
 
