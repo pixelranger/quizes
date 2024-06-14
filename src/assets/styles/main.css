@@ -3,11 +3,314 @@
 @import 'tailwindcss/utilities';
 */
 
+:root {
+	--quiz-color-primary: rgb(49, 183, 188);
+	--quiz-color-primary-rgb: 49, 183, 188;
+	--quiz-opacity: 0.3;
+}
+
 #app {
-    font-size: 44px;
-    margin: 0 auto;
-    line-height: 1.15;
-    padding: 2em;
-    font-weight: 400;
-    letter-spacing: 0.4px;
-  }
+	/* font-size: 44px;
+	margin: 0 auto;
+	line-height: 1.15;
+	padding: 2em;
+	font-weight: 400;
+	letter-spacing: 0.4px; */
+
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+	
+/* Это ограничение для пристрелки контейнера, контейнеры могут быть разные и адаптивные */
+.quiz-container {
+	background-color: azure;
+}
+	
+
+.quiz-container {
+	position: relative;
+	display: flex;
+	overflow: hidden;
+
+	/* Если внутренняя вставка и есть блоки сверху-снизу, то вычисляем высоту, если нет, то height: 100vh; top:0; */
+	height: calc(100vh - 4rem);
+	/* Это для теста блока шапки */
+	top: 4rem;
+
+
+
+}
+
+	
+	
+.quiz-container .quiz-content {
+
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0%; 
+	overflow-x: hidden;
+	overflow-y: auto;
+	/* padding-top: 2rem; */
+
+
+
+	/* position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center; */
+
+	width: 100%;
+	/* height: 100%; */
+	margin: 0 auto;
+	/* padding: 2rem 0 0 0; */
+
+
+	/* background: lightgreen; */
+}
+
+
+.quiz-progress-container,
+.quiz-inner-container	{
+	/* Параметры контейнера */
+	width: 100%;
+	max-width: 1200px;	
+	margin: 0 auto;
+}
+
+.quiz-inner-container {
+	flex-grow: 1;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.quiz-progress-container {
+	position: sticky;
+	z-index: 10;
+	flex-shrink: 0;
+	/* position: absolute; */
+	top: 0;
+	height: 2rem;
+	width: 100%;
+	/* background-color: red; */
+	background-color: white; /* или цвет бэкграунда, или свой */
+}
+
+.quiz-progress {
+  position: relative;
+  top: 1rem;
+  /* width: 100%; */
+  height: 4px;
+  overflow: hidden;
+  background-color: rgba( var(--quiz-color-primary-rgb), var(--quiz-opacity)); 
+	/* rgba(49,183,188,.3); */
+
+	/* Левый и правый ьфкпшт устанавливаются как отступ у контейнера */
+	margin: 0 1rem;
+}
+
+.quiz-progress .value {
+  height: 100%;
+  width: 0;
+  background-color: rgb(var(--quiz-color-primary-rgb));
+  transition: all 0.4s ease 0s;
+}
+
+
+.quiz-content .parts {
+	padding: 2rem 1rem 1rem;
+	flex-grow: 1;
+
+	
+	display: flex;
+	flex-direction: column;
+	justify-content: center;	
+}
+
+.quiz-inner-bottom {
+	position: sticky;
+	bottom: 0;
+	/* height: 6rem; */
+
+	padding: 1rem;
+
+	background-color: #f3f4f6e6;
+}
+
+.quiz-inner-bottom .button-container {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1.5rem;
+
+}
+
+
+.quiz-content .inner-content .title {
+	font-size: 1.25rem;
+	line-height: 1.4;
+	color: rgb(1, 41, 65);
+	overflow-wrap: break-word;
+	margin: 0 0 1.5rem 0;	
+}
+
+.quiz-content .inner-content .description {
+	margin: 1.5rem 0;
+
+	color: #909093;
+	font-size: 1rem;
+	line-height: 1.4;
+}
+
+
+@media all and (min-width: 1288px) {
+	.quiz-content .parts {
+		flex-grow: 0;
+	}	
+
+	.quiz-content .inner-content .title {
+		font-size: 1.5rem;
+	}
+
+	.quiz-content .inner-content .description {
+		font-size: 1.125rem;
+	}
+
+	.quiz-content .quiz-inner-bottom {
+		background: white;
+	}
+}
+
+
+.quiz-content .result-grid {
+	display: grid;
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+	row-gap: 2.5rem;
+	column-gap: 2rem;
+}
+
+.quiz-container .scale-container > div {
+	transform: scale(.4);
+	transform-origin: top left;	
+}
+
+@media all and (min-width: 768px) {
+	.quiz-content .result-grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.quiz-content .result-grid .result-grid-left {
+		grid-column: span 6 / span 6;
+	}
+		
+	.quiz-content .result-grid .result-grid-right {
+		grid-column: span 6 / span 6;
+	}
+
+}
+
+@media all and (min-width: 976px) {
+	.quiz-content .scale-container {
+		height: 614px;
+		width: 437px;
+	}
+
+	.quiz-container .scale-container > div {
+		transform: scale(.55);
+	}	
+}
+
+@media all and (min-width: 1288px) {
+	.quiz-content .result-grid .result-grid-left {
+		grid-column: span 5 / span 5;
+	}
+		
+	.quiz-content .result-grid .result-grid-right {
+		grid-column: span 7 / span 7;
+	}
+
+	.quiz-content .scale-container {
+		height: 675px;
+		width: 476px;
+	}
+
+	.quiz-container .scale-container > div {
+		transform: scale(.6);
+	}		
+}
+
+
+/* Old styles */
+
+.quiz-content .q-btn {
+  position: relative;
+  font-family: inherit;
+  line-height: initial;
+  font-weight: 700;
+  cursor: pointer;
+  transition-duration: 0.1s;
+  transition-property: background-color, color, border-color, opacity, box-shadow;
+  transition-timing-function: ease-out;
+  outline: none;
+  border: 1px solid transparent;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 12px 0px;
+
+  /* min-height: 48px; */
+
+	padding: .75rem 2rem;
+	background-color: var(--quiz-color-primary);
+
+  color: rgb(255, 255, 255);
+  /* border-radius: 5px;
+  font-size: 26px;
+   */
+  /* float: left; */
+
+	text-decoration: none;
+}
+
+.quiz-content .q-btn:hover {
+  background-color: #217c7f;
+}
+
+.quiz-content .info {
+  /* padding: 40px; */
+}
+
+.quiz-content .timing {
+  margin: 1rem 0 0 0;
+  max-width: 100%;
+  width: inherit;
+  font-weight: unset;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgb(1, 41, 65);
+}
+
+.quiz-content .timing .icon svg {
+  margin: 0 10px 0 0;
+  opacity: .7
+}
+
+.quiz-content .field {
+  display: block;
+  padding: 10px 0 20px 0;
+}
+
+.quiz-content label {
+  display: block;
+  margin: 0px;
+  max-width: 100%;
+  width: inherit;
+  font-weight: unset;
+  font-size: 16px;
+  line-height: 24px;
+  color: rgb(109, 131, 226);
+}
+
