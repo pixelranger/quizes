@@ -211,15 +211,16 @@
           </div>
         </div>
 
-        <div v-if="!checkAttempts()" class="quiz-inner-bottom">
+        <div v-if="!checkAttempts() && (progress !== 'final' || score < 9)" class="quiz-inner-bottom">
           <div class="button-container">
             <button v-if="progress === 'start'" class="q-btn next" @click="progress = 'questions'">Начать тест</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
               {{ settings.steps[currentStep].button || 'Ок' }}
             </button>
+            <button v-if="progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
             <div class="info">Нажмите <b>Enter ↵</b></div>
           </div>
-          <div class="timing">
+          <div v-if="progress === 'start'" class="timing">
             <span data-qa="icon" aria-hidden="true" class="icon">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none" data-qa="animated-clock">
 								<circle cx="6" cy="6" fill="#012941" r="6"></circle>
@@ -1123,8 +1124,7 @@ function inputChange(name, e) {
 }
 
 function optionClick(q, a, v) {
-  if (localStorage.getItem('currentStep' + currentStep.value) === '0') {
-    localStorage.setItem('currentStep' + currentStep.value, '1');
+  if (!answers.value[q]) {
     answers.value[q] = a;
     score.value += parseInt(v);
   }
@@ -1234,10 +1234,6 @@ for (let key in props) {
   if (key === 'email') {
     answers.value['email'] = props[key];
   }
-}
-
-for (let i = 0; i < settings.steps.length; i++) {
-  localStorage.setItem('currentStep' + i, '0');
 }
 
 document.addEventListener('keydown', e => {
