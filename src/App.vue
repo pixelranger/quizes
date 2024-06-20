@@ -6,6 +6,7 @@
     :firstname="firstname"
     :lastname="lastname"
     :email="email"
+    :settings="settings"
   />
 </template>
 
@@ -22,6 +23,9 @@ defineProps({
   },
   email: {
     type: String
-  }
+  },
+  settings: {
+    type: Object
+  },
 });
 </script>

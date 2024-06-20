@@ -313,3 +313,29 @@ body {
   line-height: 24px;
   color: rgb(109, 131, 226);
 }
+
+.quiz-content .option input {
+	display: none;
+}
+
+.quiz-content .option label svg {
+	opacity: 0;
+	transition: opacity 0.5s linear;
+}
+.quiz-content .option label.animate svg {
+	opacity: 1;
+}
+
+.quiz-inner-container.animate {
+	animation: show-step 0.5s linear;
+}
+
+
+@keyframes show-step {
+	0% {
+		transform: translateY(-1000px);
+	}
+	100% {
+		transform: translateY(0px);
+	}
+}
