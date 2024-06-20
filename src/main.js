@@ -16,6 +16,7 @@ customElements.define('countdown-widget', class extends HTMLElement {
       'firstname': this.getAttribute('firstname'),
       'lastname': this.getAttribute('lastname'),
       'email': this.getAttribute('email'),
+      'settings': this.getAttribute('settings'),
     }
     
     // Bootstrap the Vue.js application within the shadow DOM
