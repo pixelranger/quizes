@@ -221,6 +221,22 @@ const settings = JSON.stringify({
     },
     {
       "type": "form",
+      "title": "Ваш возраст",
+      "required": true,
+      "fields": [
+        {
+          "type": "range",
+          "name": "age",
+          "min": 16,
+          "max": 70,
+          "value": 20,
+          "required": true
+        }
+      ],
+      "button": "Ок"
+    },
+    {
+      "type": "form",
       "title": "Укажите ваш регион",
       "required": true,
       "fields": [
@@ -706,18 +722,21 @@ const settings = JSON.stringify({
           "title": "Чтобы понять, как распределить доходы и подсчитать расходы",
           "value": 0,
           "selectedText": "<b>Нет!</b> Финансовый план – это не только учет доходов и расходов, но и постановка финансовых целей, умение создавать сбережения и работать с инвестициями",
+          "image": "https://xn--80apaohbc3aw9e.xn--p1ai/images/estafeta/main-quiz-image-01.png",
           "score": 0
         },
         {
           "title": "Чтобы легче было ставить финансовые цели и копить на крупные покупки",
           "value": 0,
           "selectedText": "<b>Неточно!</b> Чтобы поставить финансовую цель, надо точно подсчитать доходы и расходы",
+          "image": "https://xn--80apaohbc3aw9e.xn--p1ai/images/estafeta/main-quiz-image-01.png",
           "score": 0
         },
         {
           "title": "Во всех случаях",
           "value": 1,
           "selectedText": "<b>Именно!</b> Финансовый план нужен для того, чтобы за те же деньги можно было позволить себе больше. Для этого надо подсчитывать доходы и расходы, ставить финансовые цели и планировать траты на месяц, полгода, год, иметь сбережения и уметь инвестировать",
+          "image": "https://xn--80apaohbc3aw9e.xn--p1ai/images/estafeta/main-quiz-image-01.png",
           "score": 1
         }
       ]
