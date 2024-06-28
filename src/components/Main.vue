@@ -238,7 +238,7 @@
 
 <script setup>
 import { ref, defineProps, watch } from 'vue';
-// import html2pdf from "html2pdf.js"
+import html2pdf from "html2pdf.js/dist/html2pdf.bundle"
 
 const props = defineProps({
   firstname: {
@@ -438,7 +438,7 @@ function printPdf() {
       orientation: 'portrait'
     }
   }
-  // html2pdf().set(options).from(pdf.value.innerHTML).toContainer().toCanvas().save();
+  html2pdf().set(options).from(pdf.value.innerHTML).toContainer().toCanvas().save();
 }
 
 function sendPdf() {
