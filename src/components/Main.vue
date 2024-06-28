@@ -75,6 +75,21 @@
                     Пример: <i>{{ field.example }}</i>
                   </div>
                 </div>
+
+                <div v-if="field.type && field.type === 'range'" class="field field-range">
+                  <label v-if="field.label">
+                    {{ field.label }}
+                    <template v-if="field.required">*</template>
+                  </label>
+                  <input class="input-range"
+                         type="range"
+                         :name="field.name"
+                         :min="field.min"
+                         :max="field.max"
+                         v-model="answers[field.name]"
+                         @input="inputChange(field.name, $event)">
+                  <span class="input-range-val">{{ answers[field.name] }}</span>
+                </div>
               </template>
             </div>
 
@@ -102,6 +117,7 @@
                          :disabled="answers[settings.steps[currentStep].title]"
                          :checked="answers[settings.steps[currentStep].title] === option.title"
                   >
+                  <img v-if="option.image" :src="option.image" class="option-image" alt="">
                   <div v-if="answers[settings.steps[currentStep].title] === option.title"
                        class="selected-answer-text"
                        v-html="option.selectedText"></div>
@@ -280,6 +296,16 @@ for (let key in props) {
     settings = JSON.parse(props[key]);
   }
 }
+
+settings.steps.forEach(step => {
+  if (step.type === 'form') {
+    step.fields.forEach(field => {
+      if (field.type === 'range') {
+        answers.value[field.name] = field.value || field.min;
+      }
+    })
+  }
+});
 
 function checkAttempts() {
   return parseInt(localStorage.getItem('position')) > settings.attempts && localStorage.getItem('position') !== null
