@@ -199,7 +199,7 @@
                             {{ answers['last_name'] }}
                           </div>
                           <div class="image-wrap">
-                            <img src="https://xn--80apaohbc3aw9e.xn--p1ai/images/certificate-relay-1242x1754.jpg" alt="">
+                            <img :src="settings.certificate" alt="">
                           </div>
                         </div>
                       </section>
