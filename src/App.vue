@@ -1,6 +1,6 @@
 <template>
   <!--Link to compiled style.css-->
-  <link rel="stylesheet" href="../dist/style.css">
+  <link rel="stylesheet" href="style.css">
 
   <Main
     :firstname="firstname"

@@ -238,7 +238,7 @@
 
 <script setup>
 import { ref, defineProps, watch } from 'vue';
-import html2pdf from "html2pdf.js"
+// import html2pdf from "html2pdf.js"
 
 const props = defineProps({
   firstname: {
@@ -251,7 +251,7 @@ const props = defineProps({
     type: String
   },
   settings: {
-    type: Object
+    type: String
   }
 });
 
@@ -277,7 +277,7 @@ for (let key in props) {
     answers.value['email'] = props[key];
   }
   if (key === 'settings') {
-    settings = props[key];
+    settings = JSON.parse(props[key]);
   }
 }
 
@@ -438,7 +438,7 @@ function printPdf() {
       orientation: 'portrait'
     }
   }
-  html2pdf().set(options).from(pdf.value.innerHTML).toContainer().toCanvas().save();
+  // html2pdf().set(options).from(pdf.value.innerHTML).toContainer().toCanvas().save();
 }
 
 function sendPdf() {
