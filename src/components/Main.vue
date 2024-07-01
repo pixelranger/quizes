@@ -259,7 +259,7 @@
 
         <div v-if="!checkAttempts() && (progress !== 'final' || score < 9)" class="quiz-inner-bottom">
           <div class="button-container">
-            <button v-if="progress === 'start'" class="q-btn next" @click="progress = 'questions'">Начать тест</button>
+            <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать тест</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
               {{ settings.steps[currentStep].button || 'Ок' }}
             </button>
@@ -339,6 +339,16 @@ settings.steps.forEach(step => {
     })
   }
 });
+
+const refParam = get('ref');
+if (refParam){
+  localStorage.setItem('ref', refParam);
+}
+
+function get(name){
+  if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+    return decodeURIComponent(name[1]);
+}
 
 function checkAttempts() {
   return parseInt(localStorage.getItem('position')) > settings.attempts && localStorage.getItem('position') !== null
@@ -464,9 +474,24 @@ function postData() {
   });
 }
 
+function setStep() {
+  let url = new URL(window.location);
+  url.searchParams.set('step', currentStep.value.toString());
+  history.pushState({}, "", url);
+  if (typeof(ym) === 'function') {
+    ym(84939769, 'hit', url.href);
+  }
+}
+
+function start() {
+  progress.value = 'questions';
+  setStep();
+}
+
 function next() {
   currentStep.value++;
   progressCalc();
+  setStep();
 
   if (currentStep.value === settings.steps.length) {
     progress.value = 'final';
