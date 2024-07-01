@@ -42,7 +42,7 @@
               <div v-if="settings.steps[currentStep].description"
                    class="description"
                    v-html="settings.steps[currentStep].description"></div>
-              <template v-for="field in settings.steps[currentStep].fields">
+              <template v-for="(field, fieldIndex) in settings.steps[currentStep].fields">
                 <div v-if="field.type && field.type === 'select'" class="field field-select">
                   <label v-if="field.label">
                     {{ field.label }}
@@ -73,6 +73,36 @@
                          @input="inputChange(field.name, $event)">
                   <div v-if="field.example" class="example">
                     Пример: <i>{{ field.example }}</i>
+                  </div>
+                </div>
+
+                <div v-if="field.type && field.type === 'radio'" class="field field-radio">
+                  <div class="radio-item">
+                    <input class="input-radio"
+                           type="radio"
+                           :id="'radio' + currentStep + fieldIndex"
+                           :name="field.name"
+                           :value="field.value"
+                           @change="inputChange(field.name, $event)"
+                    >
+                    <label :for="'radio' + currentStep + fieldIndex">
+                      {{ field.label }}
+                    </label>
+                  </div>
+                </div>
+
+                <div v-if="field.type && field.type === 'checkbox'" class="field field-checkbox">
+                  <div class="checkbox-item">
+                    <input class="input-checkbox"
+                           type="checkbox"
+                           :id="'checkbox' + currentStep + fieldIndex"
+                           :name="field.name"
+                           :value="field.value"
+                           @change="checkboxChange(field.name, $event)"
+                    >
+                    <label :for="'checkbox' + currentStep + fieldIndex">
+                      {{ field.label }}
+                    </label>
                   </div>
                 </div>
 
@@ -303,6 +333,9 @@ settings.steps.forEach(step => {
       if (field.type === 'range') {
         answers.value[field.name] = field.value || field.min;
       }
+      if (field.type === 'checkbox') {
+        answers.value[field.name] = [];
+      }
     })
   }
 });
@@ -359,11 +392,18 @@ function verifyStep() {
 
   if (step.type === 'form' && step.required) {
     step.fields.forEach(field => {
-      if (field.type === 'input' || field.type === 'select') {
+      const types = ['input', 'select', 'radio'];
+      if (types.includes(field.type)) {
         if (!answers.value[field.name]) {
           countError++;
         }
         if (field.mask && checkMask(field)) {
+          countError++;
+        }
+      }
+
+      if (field.type === 'checkbox') {
+        if (!answers.value[field.name].length) {
           countError++;
         }
       }
@@ -376,6 +416,15 @@ function verifyStep() {
 
 function inputChange(name, e) {
   answers.value[name] = e.target.value;
+  verifyStep();
+}
+
+function checkboxChange(name, e) {
+  if (answers.value[name].includes(e.target.value)) {
+    answers.value[name] = answers.value[name].filter(el => el !== e.target.value);
+  } else {
+    answers.value[name].push(e.target.value);
+  }
   verifyStep();
 }
 
