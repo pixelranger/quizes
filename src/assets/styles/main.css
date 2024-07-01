@@ -389,6 +389,20 @@ body {
 	animation-iteration-count: 5;
 }
 
+.radio-item, .checkbox-item {
+	display: flex;
+}
+
+.radio-item .input-radio,
+.checkbox-item .input-checkbox {
+	margin: 0 5px 0 0;
+}
+
+.quiz-content .field-radio,
+.quiz-content .field-checkbox {
+	padding-bottom: 0;
+}
+
 .quiz-content .error-message {
 	background: #f7e6e6;
 	color: #bf0404;

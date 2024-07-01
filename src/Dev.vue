@@ -237,6 +237,52 @@ const settings = JSON.stringify({
     },
     {
       "type": "form",
+      "title": "Ваш пол",
+      "required": true,
+      "fields": [
+        {
+          "type": "radio",
+          "name": "gender",
+          "label": "Мужской",
+          "value": "male"
+        },
+        {
+          "type": "radio",
+          "name": "gender",
+          "label": "Женский",
+          "value": "female"
+        }
+      ],
+      "button": "Ок"
+    },
+    {
+      "type": "form",
+      "title": "Ваши увлечения",
+      "required": true,
+      "fields": [
+        {
+          "type": "checkbox",
+          "name": "hobby",
+          "label": "Музыка",
+          "value": "music"
+        },
+        {
+          "type": "checkbox",
+          "name": "hobby",
+          "label": "Спорт",
+          "value": "sport"
+        },
+        {
+          "type": "checkbox",
+          "name": "hobby",
+          "label": "Искусства",
+          "value": "art"
+        }
+      ],
+      "button": "Ок"
+    },
+    {
+      "type": "form",
       "title": "Укажите ваш регион",
       "required": true,
       "fields": [
