@@ -131,10 +131,10 @@
                    class="description"
                    v-html="settings.steps[currentStep].description"></div>
               <template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
-                <div class="option" @click="optionClick(settings.steps[currentStep].title, option.title, option.value)">
+                <div class="option" @click="optionClick(option.title, option.value)">
                   <label v-if="option.title"
                          :for="'radio' + currentStep + optionIndex"
-                         :class="{'animate': answers[settings.steps[currentStep].title] === option.title}"
+                         :class="{'animate': checkAnimate(option.title)}"
                   >
                     <span class="key">{{ alphabet[optionIndex] }}</span>
                     {{ option.title }}
@@ -150,7 +150,7 @@
                          :checked="answers[settings.steps[currentStep].title] === option.title"
                   >
                   <img v-if="option.image" :src="option.image" class="option-image" alt="">
-                  <div v-if="answers[settings.steps[currentStep].title] === option.title"
+                  <div v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
                        class="selected-answer-text"
                        v-html="option.selectedText"></div>
                 </div>
@@ -176,45 +176,46 @@
             <div class="result-grid-left md:col-span-6 xl:col-span-5">
               <div class="form text-left">
                 <form action="">
-                  <div class="mb-3" style="display:none;">
-                    <label class="block mb-1">
-                      Имя
-                    </label>
-                    <input id="quiz-pdf-name" name="pdfName" type="text" :value="answers['name']" class="form-control w-full">
-                  </div>
-                  <div class="mb-3" style="display:none;">
-                    <label class="block mb-1">
-                      Фамилия
-                    </label>
-                    <input id="quiz-pdf-last-name" name="pdfLastName" type="text" :value="answers['last_name']"
-                           class="form-control w-full">
-                  </div>
+                  <div v-if="settings.generationPDF">
+                    <div class="mb-3" style="display:none;">
+                      <label class="block mb-1">
+                        Имя
+                      </label>
+                      <input id="quiz-pdf-name" name="pdfName" type="text" :value="answers['name']" class="form-control w-full">
+                    </div>
+                    <div class="mb-3" style="display:none;">
+                      <label class="block mb-1">
+                        Фамилия
+                      </label>
+                      <input id="quiz-pdf-last-name" name="pdfLastName" type="text" :value="answers['last_name']"
+                             class="form-control w-full">
+                    </div>
 
-                  <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
-                  <div class="block-button-wrap">
-                    <button type="button" class="btn relative w-full btn btn-primary" @click="printPdf()">
+                    <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
+                    <div class="block-button-wrap">
+                      <button type="button" class="btn relative w-full btn btn-primary" @click="printPdf()">
 											<span class="text">
 												Распечатать сейчас (pdf)
 											</span>
-                    </button>
-                  </div>
-                  <div class="form-group mt-3">
-                    <label class="">
-                      Отправить мне на электронную почту
-                    </label>
-                    <div class="flex mt-1">
-                      <input id="quiz-pdf-email" name="pdfEmail" type="email" :value="answers['email']"
-                             class="form-control flex-grow -mr-2">
-                      <div class="block-button-wrap">
-                        <button type="button" class="btn relative btn btn-primary" @click="sendPdf()">
+                      </button>
+                    </div>
+                    <div class="form-group mt-3">
+                      <label class="">
+                        Отправить мне на электронную почту
+                      </label>
+                      <div class="flex mt-1">
+                        <input id="quiz-pdf-email" name="pdfEmail" type="email" :value="answers['email']"
+                               class="form-control flex-grow -mr-2">
+                        <div class="block-button-wrap">
+                          <button type="button" class="btn relative btn btn-primary" @click="sendPdf()">
 													<span contenteditable="false" class="text">
 														Отправить
 													</span>
-                        </button>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-
 
                   <div class="form-group mt-6">
                     <div class="mb-4">
@@ -233,7 +234,7 @@
                 </form>
               </div>
             </div>
-            <div class="result-grid-right md:col-span-6 xl:col-span-7">
+            <div v-if="settings.generationPDF" class="result-grid-right md:col-span-6 xl:col-span-7">
               <div class="scale-container">
                 <div id="quiz-pdf-zone" class="">
                   <section class="layout-container unset-all">
@@ -340,6 +341,10 @@ settings.steps.forEach(step => {
       }
     })
   }
+
+  if (step.type === 'question' && step.multiple) {
+    answers.value[step.title] = [];
+  }
 });
 
 const refParam = get('ref');
@@ -362,6 +367,14 @@ function progressCalc() {
 
 function getTitle(ttl) {
   return ttl.replace(/{name}/g, answers.value['name']);
+}
+
+function checkAnimate(title) {
+  if (settings.steps[currentStep.value].multiple) {
+    return answers.value[settings.steps[currentStep.value].title].includes(title);
+  } else {
+    return answers.value[settings.steps[currentStep.value].title] === title;
+  }
 }
 
 function numWord() {
@@ -397,8 +410,14 @@ function verifyStep() {
   const step = settings.steps[currentStep.value];
 
   if (step.type === 'question' && step.required) {
-    if (!answers.value[step.title]) {
-      countError++;
+    if (settings.steps[currentStep.value].multiple) {
+      if (!answers.value[step.title].length) {
+        countError++;
+      }
+    } else {
+      if (!answers.value[step.title]) {
+        countError++;
+      }
     }
   }
 
@@ -440,10 +459,19 @@ function checkboxChange(name, e) {
   verifyStep();
 }
 
-function optionClick(q, a, v) {
-  if (!answers.value[q]) {
-    answers.value[q] = a;
-    score.value += parseInt(v);
+function optionClick(a, v) {
+  const q = settings.steps[currentStep.value].title;
+
+  if (settings.steps[currentStep.value].multiple) {
+    if (!answers.value[q].includes(a)) {
+      answers.value[q].push(a);
+      score.value += parseInt(v);
+    }
+  } else {
+    if (!answers.value[q]) {
+      answers.value[q] = a;
+      score.value += parseInt(v);
+    }
   }
 }
 
