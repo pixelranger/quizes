@@ -463,10 +463,11 @@ function postData() {
   }
 
   const postObj = {
-    answers: answers.value,
-    position: position,
-    uuid: uuid,
-    ref: localStorage.getItem('ref')
+    'answers': answers.value,
+    'position': position,
+    'uuid': uuid,
+    'monththeme_id': settings.monththeme_id,
+    'ref': localStorage.getItem('ref')
   };
 
   fetch(settings.post, {

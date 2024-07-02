@@ -181,6 +181,7 @@ const settings = JSON.stringify({
   "certificate": "https://xn--80apaohbc3aw9e.xn--p1ai/images/certificate-relay-1242x1754.jpg",
   "post": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz",
   "sendCertificateUrl": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/api/send-fin-zosh-certificate",
+  "monththeme_id": 14,
   "attempts": 3,
   "ymCount": 84939769,
   "steps": [
