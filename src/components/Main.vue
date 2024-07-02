@@ -21,6 +21,8 @@
           <template v-if="progress === 'start'">
             <div class="title" v-html="settings.title"></div>
             <div class="description" v-html="settings.description"></div>
+            <img v-if="settings.showStartImage && settings.startImage"
+                 :src="settings.startImage" class="start-image" alt="">
             <div v-if="checkAttempts()" class="quiz-error">
               Вы исчерапали 3 попытки. Прохождение теста недоступно.
             </div>
@@ -479,7 +481,7 @@ function setStep() {
   url.searchParams.set('step', currentStep.value.toString());
   history.pushState({}, "", url);
   if (typeof(ym) === 'function') {
-    ym(84939769, 'hit', url.href);
+    ym(settings.ymCount, 'hit', url.href);
   }
 }
 
