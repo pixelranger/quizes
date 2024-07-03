@@ -498,7 +498,9 @@ function postData() {
     'position': position,
     'uuid': uuid,
     'monththeme_id': settings.monththeme_id,
-    'ref': localStorage.getItem('ref-' + settings.id)
+    'quiz_id': settings.id,
+    'ref': localStorage.getItem('ref-' + settings.id),
+    'score': score.value,
   };
 
   fetch(settings.post, {
