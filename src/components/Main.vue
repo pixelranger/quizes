@@ -7,7 +7,7 @@
           <div class="value" :style="{'width': progressValue + '%'}"></div>
         </div>
       </div>
-      <div class="quiz-inner-container" :class="{'animate': animateStep}">
+      <div class="quiz-inner-container inner-content" :class="{'animate': animateStep}">
         <div class="parts">
           <div v-if="stepError" class="error-message">
             <span class="boundary">
@@ -172,7 +172,7 @@
             </div>
           </div>
 
-          <div v-if="progress === 'final' && score > 8" class="result-grid" id="result-pdf">
+          <div v-if="progress === 'final' && score > 2" class="result-grid" id="result-pdf">
             <div class="result-grid-left md:col-span-6 xl:col-span-5">
               <div class="form text-left">
                 <form action="">
