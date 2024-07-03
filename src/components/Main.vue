@@ -165,7 +165,7 @@
               {{ answers['name'] }}, благодарим за прохождение теста!
             </div>
             <div class="description">
-              Ваш результат: {{ score }}/10 {{ numWord() }}
+              Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}
               <template v-for="el in settings.result">
                 <div v-if="score >= el.from && score <= el.to">
                   {{ el.text }}
@@ -315,6 +315,7 @@ let stepError = ref(false);
 let animateStep = ref(false);
 let answers = ref({});
 let score = ref(0);
+let maxScore = ref(0);
 let pdf = ref();
 
 for (let key in props) {
@@ -344,8 +345,11 @@ settings.steps.forEach(step => {
     })
   }
 
-  if (step.type === 'question' && step.multiple) {
-    answers.value[step.title] = [];
+  if (step.type === 'question') {
+    maxScore.value++;
+    if (step.multiple) {
+      answers.value[step.title] = [];
+    }
   }
 });
 
