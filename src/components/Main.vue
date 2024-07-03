@@ -24,7 +24,7 @@
             <img v-if="settings.showStartImage && settings.startImage"
                  :src="settings.startImage" class="start-image" alt="">
             <div v-if="checkAttempts()" class="quiz-error">
-              Вы исчерапали 3 попытки. Прохождение теста недоступно.
+              Вы исчерапали {{ settings.attempts }} попытки. Прохождение теста недоступно.
             </div>
           </template>
 
@@ -130,6 +130,8 @@
               <div v-if="settings.steps[currentStep].description"
                    class="description"
                    v-html="settings.steps[currentStep].description"></div>
+              <img v-if="settings.steps[currentStep].image"
+                   :src="settings.steps[currentStep].image" class="question-image" alt="">
               <template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
                 <div class="option" @click="optionClick(option.title, option.value)">
                   <label v-if="option.title"
@@ -172,7 +174,7 @@
             </div>
           </div>
 
-          <div v-if="progress === 'final' && score > 2" class="result-grid" id="result-pdf">
+          <div v-if="progress === 'final' && score >= settings.resultPDF" class="result-grid" id="result-pdf">
             <div class="result-grid-left md:col-span-6 xl:col-span-5">
               <div class="form text-left">
                 <form action="">
@@ -260,7 +262,7 @@
           </div>
         </div>
 
-        <div v-if="!checkAttempts() && (progress !== 'final' || score < 9)" class="quiz-inner-bottom">
+        <div v-if="!checkAttempts() && (progress !== 'final' || score < settings.resultPDF)" class="quiz-inner-bottom">
           <div class="button-container">
             <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать тест</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
@@ -277,7 +279,7 @@
 								<line x1="6" y1="6" x2="6" y2="3" stroke="#FEFDFA" stroke-width="1.2" stroke-linecap="round"></line>
 							</svg>
             </span>
-            Занимает 7 минут(-ы)
+            {{ settings.timing }}
           </div>
         </div>
       </div>
@@ -349,7 +351,7 @@ settings.steps.forEach(step => {
 
 const refParam = get('ref');
 if (refParam){
-  localStorage.setItem('ref', refParam);
+  localStorage.setItem('ref-' + settings.id, refParam);
 }
 
 function get(name){
@@ -358,7 +360,8 @@ function get(name){
 }
 
 function checkAttempts() {
-  return parseInt(localStorage.getItem('position')) > settings.attempts && localStorage.getItem('position') !== null
+  const position = localStorage.getItem('position-' + settings.id);
+  return parseInt(position) > settings.attempts && position !== null;
 }
 
 function progressCalc() {
@@ -477,13 +480,13 @@ function optionClick(a, v) {
 
 function postData() {
   let position;
-  if (localStorage.getItem('position') === null) {
+  if (localStorage.getItem('position-' + settings.id) === null) {
     position = 1;
   } else {
-    position = parseInt(localStorage.getItem('position'));
+    position = parseInt(localStorage.getItem('position-' + settings.id));
     position = position + 1;
   }
-  localStorage.setItem('position', position);
+  localStorage.setItem('position-' + settings.id, position);
 
   let uuid = '';
   if (localStorage.getItem('_ym_uid') !== null) {
@@ -495,7 +498,7 @@ function postData() {
     'position': position,
     'uuid': uuid,
     'monththeme_id': settings.monththeme_id,
-    'ref': localStorage.getItem('ref')
+    'ref': localStorage.getItem('ref-' + settings.id)
   };
 
   fetch(settings.post, {
