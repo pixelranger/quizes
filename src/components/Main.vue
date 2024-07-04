@@ -174,11 +174,11 @@
             </div>
           </div>
 
-          <div v-if="progress === 'final' && score >= settings.resultPDF" class="result-grid" id="result-pdf">
+          <div v-if="progress === 'final'" class="result-grid" id="result-pdf">
             <div class="result-grid-left md:col-span-6 xl:col-span-5">
               <div class="form text-left">
                 <form action="">
-                  <div v-if="settings.generationPDF">
+                  <div v-if="settings.generationPDF && score >= settings.resultPDF">
                     <div class="mb-3" style="display:none;">
                       <label class="block mb-1">
                         Имя
@@ -221,8 +221,7 @@
 
                   <div class="form-group mt-6">
                     <div class="mb-4">
-                      <a href="/estafeta/semejnye-finansy/rating/?regionId=1&amp;score=10" target="_blank"
-                         id="rating">Посмотреть рейтинг региона</a>
+                      <a :href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
                     </div>
                     <div class="flex items-center gap-3">
                       <div>Поделиться:</div>
@@ -236,7 +235,7 @@
                 </form>
               </div>
             </div>
-            <div v-if="settings.generationPDF" class="result-grid-right md:col-span-6 xl:col-span-7">
+            <div v-if="settings.generationPDF && score >= settings.resultPDF" class="result-grid-right md:col-span-6 xl:col-span-7">
               <div class="scale-container">
                 <div id="quiz-pdf-zone" class="">
                   <section class="layout-container unset-all">

@@ -835,6 +835,8 @@ const settings = JSON.stringify({
       ]
     },
   ],
+  "ratingLink": "/estafeta/semejnye-finansy/rating/?regionId=1&amp;score=10",
+  "ratingText": "Посмотреть рейтинг региона",
   "resultPDF": 2,
   "result": [
     {
