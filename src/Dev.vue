@@ -184,7 +184,7 @@ const settings = JSON.stringify({
   "sendCertificateUrl": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/api/send-fin-zosh-certificate",
   "monththeme_id": 2,
   "attempts": 3,
-  "generationPDF": true,
+  "generationPDF": false,
   "ymCount": 84939769,
   "steps": [
     {
