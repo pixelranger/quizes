@@ -265,7 +265,7 @@
           <div class="button-container">
             <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать тест</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
-              {{ settings.steps[currentStep].button || 'Ок' }}
+              {{ settings.steps[currentStep].button || 'OK' }}
             </button>
             <button v-if="progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
             <div class="info">Нажмите <b>Enter ↵</b></div>
