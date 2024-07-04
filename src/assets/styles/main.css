@@ -313,7 +313,7 @@ body {
   font-weight: unset;
 
 	line-height: 1.25rem;
-	margin-bottom: 0.125rem;	
+	/* margin-bottom: 0.125rem;	 */
 }
 
 .quiz-content .option-image {
@@ -411,11 +411,13 @@ body {
 
 .radio-item, .checkbox-item {
 	display: flex;
+	align-items: center;
+	column-gap: 0.5rem;
 }
 
 .radio-item .input-radio,
 .checkbox-item .input-checkbox {
-	/* margin: 0 5px 0 0; */
+	margin: 0;
 
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -433,12 +435,10 @@ body {
 	flex-shrink: 0;
 	height: 1rem;
 	width: 1rem;
-	color: #2563eb;
+	color: var(--quiz-color-primary);
 	background-color: #fff;
-	border-color: #6b7280;
-	border-width: 1px;
-	--tw-shadow: 0 0 #0000;
 
+	border: 1px solid #cbd5e1;
 }
 
 .radio-item .input-radio {
