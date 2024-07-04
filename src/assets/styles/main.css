@@ -4,6 +4,7 @@
 */
 
 :root {
+	--quiz-container-bg: #ffffff;
 	--quiz-color-primary: #31b7bc;
 	--quiz-color-primary-hover: #217c7f;
 	--quiz-color-primary-rgb: 49, 183, 188;
@@ -31,7 +32,7 @@ body {
 	
 /* Это ограничение для пристрелки контейнера, контейнеры могут быть разные и адаптивные */
 .quiz-container {
-	background-color: azure;
+	background-color: var(--quiz-container-bg);
 }
 	
 
@@ -321,7 +322,7 @@ body {
 }
 
 
-.quiz-content .input-text {
+/* .quiz-content .input-text {
 	border: 1px solid;
 	border-color: #d1d5db;
 	border-radius: var(--quiz-btn-radius);
@@ -332,7 +333,48 @@ body {
 
 .quiz-content .input-text:focus {
 	border-color: var(--quiz-color-primary);
+} */
+
+
+.quiz-content input[type="text"] {
+	margin: 10px 0;
+	display: block;
+	width: 100%;
+	font-family: inherit;
+	padding-block-start: 0px;
+	padding-block-end: 5px;
+	padding-inline: 0px;
+	border: none;
+	outline: none;
+	border-radius: 0px;
+	appearance: none;
+	background-image: none;
+	background-position: initial;
+	background-size: initial;
+	background-repeat: initial;
+	background-attachment: initial;
+	background-origin: initial;
+	background-clip: initial;
+	transform: translateZ(0px);
+	font-size: 1.5rem;
+	-webkit-font-smoothing: antialiased;
+	line-height: unset;
+	animation: 1ms ease 0s 1 normal none running native-autofill-in;
+	transition: background-color 1e+08s ease 0s, box-shadow 0.1s ease-out 0s;
+	box-shadow: rgba(109, 131, 226, 0.3) 0px 1px;
+	background-color: transparent !important;
+
+
+	color: currentColor;
+	-webkit-text-fill-color: currentColor;
+	box-shadow: rgba(0, 0, 0, 0.5) 0px 1px;
 }
+
+
+.quiz-container .quiz-content input[type="text"]:focus {
+	box-shadow: rgba(0, 0, 0, 0.8) 0px 2px;
+}
+
 
 .quiz-content .option .input-radio {
 	display: none;
@@ -340,9 +382,11 @@ body {
 
 .quiz-content .option label {
 	position: relative;
-	display: inline-block;
+	display: flex;
 	-webkit-box-align: center;
 	align-items: center;
+	/* column-gap: 0.75rem; */
+
 	background-color: rgba(var(--quiz-color-primary-rgb), 0.1);
 	/* box-shadow: rgba(109, 131, 226, 0.6) 0px 0px 0px 1px inset; */
 	box-shadow: var(--quiz-color-primary) 0px 0px 0px 1px inset;
@@ -360,12 +404,13 @@ body {
 	cursor: pointer;
 	opacity: 1;
 	min-width: 300px;
-	margin: 5px 0;
-	line-height: 40px;
-	padding: 0 35px 0 15px;
 	border-radius: var(--quiz-btn-radius);
 
+
 	font-size: 1rem;
+	line-height: 1.15rem;
+	padding: 0.5rem 1rem;
+	margin: 0.5rem 0;
 }
 
 .quiz-content .option label:hover {
@@ -382,7 +427,7 @@ body {
 	transition: fill 0.2s ease 0s;
 	position: absolute;
 	right: 10px;
-	top: 13px;
+	top: 1.3rem;
 }
 
 .quiz-content .option .key {
@@ -392,19 +437,21 @@ body {
 	line-height: 29px;
 	width: 30px;
 	text-align: center;
-	margin: 4px 10px 0 -5px;
-	border: 1px solid rgba(109, 131, 226, 0.6);
 	border-radius: 3px;
+
+	flex-shrink: 0;
+	border: 1px solid rgba(var(--quiz-color-primary-rgb), 0.6);
+	margin: 0 10px 0 0;	
 }
 
 .quiz-content .option .animate .key {
-	background: #dce2ff;
+	background: rgba(var(--quiz-color-primary-rgb), 0.3);
 	animation: key 0.2s linear;
 	animation-iteration-count: 5;
 }
 
 .quiz-content .option .animate svg {
-	fill: rgb(109, 131, 226);
+	fill: rgb(var(--quiz-color-primary-rgb));
 	animation: key2 0.2s linear;
 	animation-iteration-count: 5;
 }
@@ -423,8 +470,6 @@ body {
 	-moz-appearance: none;
 	appearance: none;
 	padding: 0;
-	-webkit-print-color-adjust: exact;
-	color-adjust: exact;
 	display: inline-block;
 	vertical-align: middle;
 	background-origin: border-box;
@@ -492,9 +537,6 @@ body {
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
-  -webkit-print-color-adjust: exact;
-	color-adjust: exact;
-
 }
 
 .quiz-content .error-message {
@@ -528,10 +570,10 @@ body {
 
 @keyframes option {
 	0% {
-		box-shadow: rgba(109, 131, 226, 0.6) 0px 0px 0px 1px inset;
+		box-shadow: rgba(var(--quiz-color-primary-rgb), 0.6) 0px 0px 0px 1px inset;
 	}
 	100% {
-		box-shadow: rgba(109, 131, 226, 0.6) 0px 0px 0px 2px inset;
+		box-shadow: rgba(var(--quiz-color-primary-rgb), 0.6) 0px 0px 0px 2px inset;
 	}
 }
 
@@ -540,7 +582,7 @@ body {
 		background: #fff;
 	}
 	100% {
-		background: #dce2ff;
+		background: rgba(var(--quiz-color-primary-rgb), 0.3);
 	}
 }
 
@@ -549,7 +591,7 @@ body {
 		fill: transparent;
 	}
 	100% {
-		fill: rgb(109, 131, 226);
+		fill: rgb(var(--quiz-color-primary-rgb));
 	}
 }
 
