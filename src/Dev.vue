@@ -177,14 +177,14 @@ const settings = JSON.stringify({
   "title": "Семья и деньги: проверьте, как вы управляете семейным бюджетом",
   "description": "Финансовый план семьи – это когда вы точно знаете, на что тратите деньги. Вы не экономите копейки до зарплаты, в вашей семье нет ссор из-за денег, потому что дохода хватает на всех. Умение управлять бюджетом – это не врождённая способность, а навыки, которые может развить каждый. <br/><br/>Пройдите наш тест и проверьте, насколько эти навыки развиты у вас. В тесте 10 вопросов. За каждый правильный ответ вы получите по одному баллу. Максимально можно набрать 10 баллов. У вас будет три попытки. Лучший результат мы отправим в зачет рейтинга вашего региона. Желаем удачи!",
   "startImage": "https://xn--80apaohbc3aw9e.xn--p1ai/images/estafeta/main-quiz-image-01.png",
-  "showStartImage": false,
+  "showStartImage": true,
   "timing": "Занимает 7 минут",
   "certificate": "https://xn--80apaohbc3aw9e.xn--p1ai/images/certificate-relay-1242x1754.jpg",
   "post": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz",
   "sendCertificateUrl": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/api/send-fin-zosh-certificate",
   "monththeme_id": 2,
   "attempts": 3,
-  "generationPDF": false,
+  "generationPDF": true,
   "ymCount": 84939769,
   "steps": [
     {
@@ -768,24 +768,24 @@ const settings = JSON.stringify({
     {
       "type": "question",
       "title": "В каких случаях семье необходим финансовый план?",
-      "image": "",
+      "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/63927/treker-montaznaia-oblast-1-kopiia_resize_w600_h600.png",
       "required": true,
       "multiple": true,
       "options": [
         {
           "title": "Чтобы понять, как распределить доходы и подсчитать расходы",
           "value": 0,
-          "image": ""
+          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png"
         },
         {
           "title": "Чтобы легче было ставить финансовые цели и копить на крупные покупки",
           "value": 0,
-          "image": ""
+          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png"
         },
         {
           "title": "Во всех случаях",
           "value": 1,
-          "image": ""
+          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png"
         }
       ]
     },

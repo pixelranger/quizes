@@ -20,9 +20,9 @@
 
           <template v-if="progress === 'start'">
             <div class="title" v-html="settings.title"></div>
-            <div class="description" v-html="settings.description"></div>
             <img v-if="settings.showStartImage && settings.startImage"
-                 :src="settings.startImage" class="start-image" alt="">
+            :src="settings.startImage" class="start-image" alt="">
+            <div class="description" v-html="settings.description"></div>
             <div v-if="checkAttempts()" class="quiz-error">
               Вы исчерапали {{ settings.attempts }} попытки. Прохождение теста недоступно.
             </div>
