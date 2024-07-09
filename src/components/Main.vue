@@ -195,7 +195,7 @@
 
                     <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
                     <div class="block-button-wrap">
-                      <button type="button" class="btn relative w-full btn btn-primary" @click="printPdf()">
+                      <button type="button" class="q-btn" @click="printPdf()">
 											<span class="text">
 												Распечатать сейчас (pdf)
 											</span>
@@ -209,7 +209,7 @@
                         <input id="quiz-pdf-email" name="pdfEmail" type="email" :value="answers['email']"
                                class="form-control flex-grow -mr-2">
                         <div class="block-button-wrap">
-                          <button type="button" class="btn relative btn btn-primary" @click="sendPdf()">
+                          <button type="button" class="q-btn" @click="sendPdf()">
 													<span contenteditable="false" class="text">
 														Отправить
 													</span>
@@ -242,12 +242,14 @@
                     <section class="content-wrapper" style="width:794px;">
                       <section>
                         <div id="pdf-wrap" class="pdf-wrap" ref="pdf">
-                          <div class="fullName">
-                            {{ answers['name'] }}
-                          </div>
-                          <div class="lastName">
-                            {{ answers['last_name'] }}
-                          </div>
+													<div class="name-box">
+														<div class="fullName">
+															{{ answers['name'] }}
+														</div>
+														<div class="lastName">
+															{{ answers['last_name'] }}
+														</div>
+													</div>
                           <div class="image-wrap">
                             <img :src="settings.certificate" alt="">
                           </div>
