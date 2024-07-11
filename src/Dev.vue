@@ -771,21 +771,25 @@ const settings = JSON.stringify({
       "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/63927/treker-montaznaia-oblast-1-kopiia_resize_w600_h600.png",
       "required": true,
       "multiple": true,
+			"view": "images",
       "options": [
         {
           "title": "Чтобы понять, как распределить доходы и подсчитать расходы",
           "value": 0,
-          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png"
+          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png",
+					"selectedText": "Текст ответа 1"
         },
         {
           "title": "Чтобы легче было ставить финансовые цели и копить на крупные покупки",
           "value": 0,
-          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png"
+          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png",
+					"selectedText": "Текст ответа 2"
         },
         {
-          "title": "Во всех случаях",
+					"title": "Во всех случаях",
           "value": 1,
-          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png"
+          "image": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/storage/64302/programma.png",
+					"selectedText": "Текст ответа 3 верный"
         }
       ]
     },
