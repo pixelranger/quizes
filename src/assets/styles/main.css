@@ -389,7 +389,7 @@ body {
 	outline: 0;	
 }
 
-.quiz-content ..form-control:focus {
+.quiz-content .form-control:focus {
 	border-color: var(--quiz-color-primary);
 }
 
