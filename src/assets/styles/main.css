@@ -551,6 +551,12 @@ body {
 	}
 }
 
+@media all and (min-width: 976px) {
+	.answers-grid.images {
+		grid-template-columns: repeat(4, minmax(0, 1fr));	
+	}
+}
+
 @media all and (min-width: 1288px) {
 	.answers-grid.images {
 		grid-template-columns: repeat(4, minmax(0, 1fr));	
@@ -577,11 +583,8 @@ body {
 .answers-grid.images .option img {
 	max-width: 100%;
 	height: auto !important;
+	margin-bottom: 1rem;
 }
-
-
-
-
 
 
 .radio-item, .checkbox-item {
