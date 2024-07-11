@@ -19,10 +19,15 @@
           </div>
 
           <template v-if="progress === 'start'">
-            <div class="title" v-html="settings.title"></div>
-            <img v-if="settings.showStartImage && settings.startImage"
-            :src="settings.startImage" class="start-image" alt="">
-            <div class="description" v-html="settings.description"></div>
+
+						<div class="start-container">
+							<div class="title" v-html="settings.title"></div>
+							<div class="image">
+								<img v-if="settings.showStartImage && settings.startImage"
+								:src="settings.startImage" class="start-image" alt="">
+							</div>
+							<div class="description" v-html="settings.description"></div>
+						</div>
             <div v-if="checkAttempts()" class="quiz-error">
               Вы исчерапали {{ settings.attempts }} попытки. Прохождение теста недоступно.
             </div>
@@ -132,31 +137,40 @@
                    v-html="settings.steps[currentStep].description"></div>
               <img v-if="settings.steps[currentStep].image"
                    :src="settings.steps[currentStep].image" class="question-image" alt="">
-              <template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
-                <div class="option" @click="optionClick(option.title, option.value)">
-                  <label v-if="option.title"
-                         :for="'radio' + currentStep + optionIndex"
-                         :class="{'animate': checkAnimate(option.title)}"
-                  >
-                    <span class="key">{{ alphabet[optionIndex] }}</span>
-                    {{ option.title }}
-                    <svg height="13" width="16">
-                      <path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
-                    </svg>
-                  </label>
-                  <input class="input-radio"
-                         type="radio"
-                         :id="'radio' + currentStep + optionIndex"
-                         :name="settings.steps[currentStep].title"
-                         :disabled="answers[settings.steps[currentStep].title]"
-                         :checked="answers[settings.steps[currentStep].title] === option.title"
-                  >
-                  <img v-if="option.image" :src="option.image" class="option-image" alt="">
-                  <div v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
-                       class="selected-answer-text"
-                       v-html="option.selectedText"></div>
-                </div>
-              </template>
+							
+							<div 
+								class="answers-grid"
+								:class="settings.steps[currentStep].view"
+							>
+								<template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
+									<div class="option" @click="optionClick(option.title, option.value)">
+										<label v-if="option.title"
+													:for="'radio' + currentStep + optionIndex"
+													:class="{'animate': checkAnimate(option.title)}"
+										>
+											<div class="option-container">
+												<img v-if="option.image" :src="option.image" class="option-image" alt="">
+												<span class="key">{{ alphabet[optionIndex] }}</span>
+												<div>{{ option.title }}</div>
+											</div>
+											<svg height="13" width="16">
+												<path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
+											</svg>
+										</label>
+										<input class="input-radio"
+													type="radio"
+													:id="'radio' + currentStep + optionIndex"
+													:name="settings.steps[currentStep].title"
+													:disabled="answers[settings.steps[currentStep].title]"
+													:checked="answers[settings.steps[currentStep].title] === option.title"
+										>
+										
+										<div v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
+												class="selected-answer-text"
+												v-html="option.selectedText"></div>
+									</div>
+								</template>
+							</div>
             </div>
           </template>
 
