@@ -15,7 +15,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         widget: fileURLToPath(new URL('./src/main.js', import.meta.url)),
-        style: './src/assets/styles/main.css'
+        style: './src/assets/styles/main.scss'
       },
       output: {
         inlineDynamicImports: false,
