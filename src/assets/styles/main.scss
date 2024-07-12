@@ -171,6 +171,13 @@ body {
 	column-gap: 2rem;
 }
 
+.quiz-container .scale-container {
+	height: 450px;
+	margin: 0 auto;
+	overflow: hidden;
+	width: 320px;	
+}
+
 .quiz-container .scale-container > div {
 	transform: scale(.4);
 	transform-origin: top left;	
@@ -761,7 +768,6 @@ body {
 
 
 	// question container
-
 	.question-container {
 		margin: 0 0 1.5rem 0;
 
@@ -814,7 +820,7 @@ body {
 				}
 			}
 		}
-		
+
 	}	
 }  
 
