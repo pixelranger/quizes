@@ -159,9 +159,10 @@
 							>
 								<template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
 									<div class="option" @click="optionClick(option.title, option.value)">
-										<label v-if="option.title"
-													:for="'radio' + currentStep + optionIndex"
-													:class="{'animate': checkAnimate(option.title)}"
+										<label 
+											v-if="option.title"
+											:for="'radio' + currentStep + optionIndex"
+											:class="{'animate': checkAnimate(option.title)}"
 										>
 											<div class="option-container">
 												<img v-if="option.image" :src="option.image" class="option-image" alt="">
@@ -172,17 +173,19 @@
 												<path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
 											</svg>
 										</label>
-										<input class="input-radio"
-													type="radio"
-													:id="'radio' + currentStep + optionIndex"
-													:name="settings.steps[currentStep].title"
-													:disabled="answers[settings.steps[currentStep].title]"
-													:checked="answers[settings.steps[currentStep].title] === option.title"
+										<input
+											class="input-radio"
+											type="radio"
+											:id="'radio' + currentStep + optionIndex"
+											:name="settings.steps[currentStep].title"
+											:disabled="answers[settings.steps[currentStep].title]"
+											:checked="answers[settings.steps[currentStep].title] === option.title"
 										>
-										
-										<div v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
-												class="selected-answer-text"
-												v-html="option.selectedText"></div>
+										<div 
+											v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
+											class="selected-answer-text"
+											v-html="option.selectedText"
+										/>
 									</div>
 								</template>
 							</div>
