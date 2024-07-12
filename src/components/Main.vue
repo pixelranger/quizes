@@ -35,10 +35,14 @@
 
           <template v-if="progress === 'questions'">
             <div v-if="settings.steps[currentStep].type === 'notice'" class="top_content">
-              <div class="title">{{ getTitle(settings.steps[currentStep].title) }}</div>
-              <div v-if="settings.steps[currentStep].description"
-                   class="description"
-                   v-html="settings.steps[currentStep].description"></div>
+              <div class="title">
+								{{ getTitle(settings.steps[currentStep].title) }}
+							</div>
+              <div 
+								v-if="settings.steps[currentStep].description"
+                class="description"
+                v-html="settings.steps[currentStep].description" 
+							/>
             </div>
 
             <div v-if="settings.steps[currentStep].type === 'form'" class="top_content">
@@ -131,13 +135,24 @@
             </div>
 
             <div v-if="settings.steps[currentStep].type === 'question'" class="top_content">
-              <div class="title">{{ settings.steps[currentStep].title }}</div>
-              <div v-if="settings.steps[currentStep].description"
-                   class="description"
-                   v-html="settings.steps[currentStep].description"></div>
-              <img v-if="settings.steps[currentStep].image"
-                   :src="settings.steps[currentStep].image" class="question-image" alt="">
-							
+							<div 
+								class="question-container"
+								:class="settings.steps[currentStep].image ? 'image-grid' : ''"
+							>
+								<div class="text-part">
+									<div class="title">{{ settings.steps[currentStep].title }}</div>
+									<div 
+										v-if="settings.steps[currentStep].description"
+										class="description"
+										v-html="settings.steps[currentStep].description"
+									/>
+								</div>
+								<div class="image-part">
+									<img v-if="settings.steps[currentStep].image"
+									:src="settings.steps[currentStep].image" class="question-image" alt="">										
+								</div>
+							</div>
+
 							<div 
 								class="answers-grid"
 								:class="settings.steps[currentStep].view"
