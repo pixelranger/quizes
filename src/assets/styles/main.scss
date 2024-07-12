@@ -164,11 +164,59 @@ body {
 
 
 
-.quiz-content .result-grid {
+.result-grid {
 	display: grid;
 	grid-template-columns: repeat(1, minmax(0, 1fr));
 	row-gap: 2.5rem;
 	column-gap: 2rem;
+
+	.block-button-wrap {
+		button {
+			width: 100%;
+		}
+	}
+
+	.form-group {
+		margin-top: 0.75rem;
+
+		label {
+			display: block;
+			margin-bottom: 0.25rem;
+	
+			input {
+				display: block;
+				width: 100%;
+				box-sizing: border-box;
+			}
+		}
+
+	}
+	
+	.input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+
+		&>.form-control {
+			position: relative;
+			flex: 1 1 auto;
+			width: 1%;
+			min-width: 0;
+
+			border-top-right-radius: 0;
+			border-bottom-right-radius: 0;			
+		}
+
+		&>:not(:first-child) {
+			border-top-left-radius: 0;
+			border-bottom-left-radius: 0;
+			margin-left: -1px;			
+		}
+	}
+
+
 }
 
 .quiz-container .scale-container {
