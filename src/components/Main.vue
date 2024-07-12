@@ -228,25 +228,22 @@
                     <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
                     <div class="block-button-wrap">
                       <button type="button" class="q-btn" @click="printPdf()">
-											<span class="text">
 												Распечатать сейчас (pdf)
-											</span>
                       </button>
                     </div>
-                    <div class="form-group mt-3">
-                      <label class="">
-                        Отправить мне на электронную почту
-                      </label>
-                      <div class="flex mt-1">
-                        <input id="quiz-pdf-email" name="pdfEmail" type="email" :value="answers['email']"
-                               class="form-control flex-grow -mr-2">
-                        <div class="block-button-wrap">
-                          <button type="button" class="q-btn" @click="sendPdf()">
-													<span contenteditable="false" class="text">
-														Отправить
-													</span>
-                          </button>
-                        </div>
+                    <div class="form-group">
+                      <label>Отправить мне на электронную почту</label>
+                      <div class="input-group">
+                        <input 
+													id="quiz-pdf-email" 
+													name="pdfEmail" 
+													type="email" 
+													:value="answers['email']"
+                          class="form-control"
+												>
+												<button type="button" class="q-btn" @click="sendPdf()">
+													Отправить
+												</button>
                       </div>
                     </div>
                   </div>
