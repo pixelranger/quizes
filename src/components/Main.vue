@@ -265,7 +265,7 @@
 														</div>
 													</div>
                           <div class="image-wrap">
-                            <img :src="settings.certificate" width="794" height="1121" alt="">
+                            <img :src="settings.certificate" width="792" height="1118" alt="">
                           </div>
                         </div>
                       </section>
