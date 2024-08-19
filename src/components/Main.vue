@@ -162,9 +162,9 @@
 
           <div v-if="progress === 'final'" class="top_content">
             <div class="title">
-              {{ answers['name'] }}, благодарим за прохождение теста!
+              {{ answers['name'] }}, благодарим за прохождение теста или опроса!
             </div>
-            <div class="description">
+            <div class="description" v-if="settings.hideDescriptionOnResult === false">
               Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}
               <template v-for="el in settings.result">
                 <div v-if="score >= el.from && score <= el.to">
@@ -223,7 +223,7 @@
                     <div class="mb-4">
                       <a :href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3" v-if="settings.hideShareOnResult === false">
                       <div>Поделиться:</div>
                       <div class="share_list flex items-center">
                         <button type="button" id="share_vk" class="m-3 icon-vk text-primary text-xl" @click="share('vk')">vk</button>
@@ -263,7 +263,7 @@
 
         <div v-if="!checkAttempts() && (progress !== 'final' || score < settings.resultPDF)" class="quiz-inner-bottom">
           <div class="button-container">
-            <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать тест</button>
+            <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
               {{ settings.steps[currentStep].button || 'OK' }}
             </button>
