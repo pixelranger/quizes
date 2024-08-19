@@ -248,16 +248,28 @@
                     </div>
                   </div>
 
-                  <div class="form-group mt-6">
-                    <div class="mb-4">
-                      <a :href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
+                  <div class="pdf-additional-block form-group">
+                    <div class="rating_link">
+                      <a class="link":href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
                     </div>
-                    <div class="flex items-center gap-3" v-if="settings.hideShareOnResult === false">
-                      <div>Поделиться:</div>
-                      <div class="share_list flex items-center">
-                        <button type="button" id="share_vk" class="m-3 icon-vk text-primary text-xl" @click="share('vk')">vk</button>
-                        <button type="button" id="share_ok" class="m-3 icon-odnoklassniki text-primary text-xl" @click="share('ok')">ok</button>
-                        <button type="button" id="share_tg" class="m-3 icon-telegram text-primary text-xl" @click="share('tg')">tg</button>
+                    <div v-if="settings.hideShareOnResult === false">
+                      <div class="share_label">Поделиться:</div>
+                      <div class="share_list">
+                        <button type="button" id="share_vk" class="q-btn m-3 icon-vk text-white text-xl" @click="share('vk')">
+													<svg width="22" height="14" viewBox="0 0 22 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path fill-rule="evenodd" clip-rule="evenodd" d="M21.4935 0.939473C21.6482 0.386842 21.4935 0 20.7713 0H18.364C17.745 0 17.4699 0.35 17.3151 0.736842C17.3151 0.736842 16.0943 3.94211 14.3576 6.00526C13.7902 6.61316 13.5495 6.79737 13.24 6.79737C13.0852 6.79737 12.8617 6.61316 12.8617 6.06053V0.939473C12.8617 0.276316 12.6897 0 12.1739 0H8.39105C8.01276 0 7.77204 0.313157 7.77204 0.589473C7.77204 1.21579 8.63178 1.36316 8.73494 3.09474V6.88947C8.73494 7.71842 8.59739 7.86579 8.28788 7.86579C7.47973 7.86579 5.48513 4.66053 4.31589 0.976316C4.07516 0.294737 3.85163 0 3.23262 0H0.825349C0.137558 0 0 0.35 0 0.736842C0 1.41842 0.808154 4.8079 3.80004 9.28421C5.79464 12.3421 8.59739 14 11.1422 14C12.6725 14 12.8617 13.6316 12.8617 13.0053V10.6842C12.8617 9.94737 12.9992 9.8 13.4979 9.8C13.859 9.8 14.4608 9.98421 15.888 11.4579C17.5215 13.2079 17.7966 14 18.7079 14H21.1152C21.803 14 22.1469 13.6316 21.9405 12.9132C21.717 12.1947 20.9432 11.1447 19.9115 9.8921C19.3441 9.17368 18.5016 8.41842 18.2608 8.03158C17.8998 7.53421 18.0029 7.31316 18.2608 6.88947C18.2608 6.87105 21.2012 2.45 21.4935 0.939473Z" fill="currentColor" />
+													</svg>
+												</button>
+                        <button type="button" id="share_ok" class="q-btn m-3 icon-odnoklassniki text-primary text-xl" @click="share('ok')">
+													<svg height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1258.2 2174.7">
+														<path class="st0" d="M629.9,1122.4c310-0.1,561.1-251.5,561-561.4c-0.1-310-251.5-561.1-561.4-561S68.4,251.5,68.5,561.4  C68.9,871.2,320.1,1122.2,629.9,1122.4 M629.9,329c128.4,0,232.5,104.1,232.5,232.5S758.3,793.9,629.9,793.9  S397.4,689.8,397.4,561.4C397.6,433.1,501.6,329.1,629.9,329L629.9,329z M856.8,1580.3c115.5-26.2,225.7-71.9,326-135  c76.4-49.3,98.4-151.1,49.1-227.5c-48.5-75.2-148.3-97.9-224.5-51c-231.1,144.5-524.5,144.5-755.6,0c-76.7-48.1-178-25.1-226.3,51.5  c-48.5,76.7-25.7,178.3,51.1,226.8c0.1,0,0.2,0.1,0.2,0.1c100.2,63,210.4,108.7,325.8,135L88.8,1894c-62.5,66-59.6,170.2,6.5,232.7  c63.5,60,162.7,60,226.2,0l308.2-308.4l308.4,308.4c64.2,64.1,168.1,64.1,232.3,0c64.1-64.2,64.1-168.1,0-232.3L856.8,1580.3z" fill="currentColor" />
+													</svg>
+												</button>
+                        <button type="button" id="share_tg" class="q-btn m-3 icon-telegram text-primary text-xl" @click="share('tg')">
+													<svg height="16" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M0.980933 6.09703C0.980933 6.09703 8.05735 3.02377 10.5116 1.9416C11.4524 1.50877 14.6429 0.123584 14.6429 0.123584C14.6429 0.123584 16.1155 -0.482382 15.9927 0.989309C15.9518 1.59533 15.6246 3.7163 15.2974 6.01047C14.8065 9.25692 14.2747 12.8063 14.2747 12.8063C14.2747 12.8063 14.1929 13.8019 13.4976 13.9751C12.8022 14.1482 11.6569 13.3691 11.4524 13.1959C11.2887 13.0661 8.38456 11.1182 7.32106 10.1659C7.03472 9.9062 6.70751 9.3868 7.36194 8.78078C8.83451 7.35234 10.5934 5.57763 11.6569 4.45221C12.1477 3.93275 12.6386 2.72076 10.5934 4.19245C7.68921 6.31348 4.82592 8.30463 4.82592 8.30463C4.82592 8.30463 4.17144 8.73746 2.94433 8.34788C1.71716 7.95836 0.285519 7.4389 0.285519 7.4389C0.285519 7.4389 -0.696122 6.78963 0.980933 6.09703Z" fill="currentColor"/>
+													</svg>													
+												</button>
                       </div>
                     </div>
                   </div>
