@@ -19,10 +19,15 @@
           </div>
 
           <template v-if="progress === 'start'">
-            <div class="title" v-html="settings.title"></div>
-            <img v-if="settings.showStartImage && settings.startImage"
-            :src="settings.startImage" class="start-image" alt="">
-            <div class="description" v-html="settings.description"></div>
+
+						<div class="start-container">
+							<div class="title" v-html="settings.title"></div>
+							<div class="image">
+								<img v-if="settings.showStartImage && settings.startImage"
+								:src="settings.startImage" class="start-image" alt="">
+							</div>
+							<div class="description" v-html="settings.description"></div>
+						</div>
             <div v-if="checkAttempts()" class="quiz-error">
               Вы исчерапали {{ settings.attempts }} попытки. Прохождение теста недоступно.
             </div>
@@ -30,10 +35,14 @@
 
           <template v-if="progress === 'questions'">
             <div v-if="settings.steps[currentStep].type === 'notice'" class="top_content">
-              <div class="title">{{ getTitle(settings.steps[currentStep].title) }}</div>
-              <div v-if="settings.steps[currentStep].description"
-                   class="description"
-                   v-html="settings.steps[currentStep].description"></div>
+              <div class="title">
+								{{ getTitle(settings.steps[currentStep].title) }}
+							</div>
+              <div 
+								v-if="settings.steps[currentStep].description"
+                class="description"
+                v-html="settings.steps[currentStep].description" 
+							/>
             </div>
 
             <div v-if="settings.steps[currentStep].type === 'form'" class="top_content">
@@ -126,37 +135,60 @@
             </div>
 
             <div v-if="settings.steps[currentStep].type === 'question'" class="top_content">
-              <div class="title">{{ settings.steps[currentStep].title }}</div>
-              <div v-if="settings.steps[currentStep].description"
-                   class="description"
-                   v-html="settings.steps[currentStep].description"></div>
-              <img v-if="settings.steps[currentStep].image"
-                   :src="settings.steps[currentStep].image" class="question-image" alt="">
-              <template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
-                <div class="option" @click="optionClick(option.title, option.value)">
-                  <label v-if="option.title"
-                         :for="'radio' + currentStep + optionIndex"
-                         :class="{'animate': checkAnimate(option.title)}"
-                  >
-                    <span class="key">{{ alphabet[optionIndex] }}</span>
-                    {{ option.title }}
-                    <svg height="13" width="16">
-                      <path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
-                    </svg>
-                  </label>
-                  <input class="input-radio"
-                         type="radio"
-                         :id="'radio' + currentStep + optionIndex"
-                         :name="settings.steps[currentStep].title"
-                         :disabled="answers[settings.steps[currentStep].title]"
-                         :checked="answers[settings.steps[currentStep].title] === option.title"
-                  >
-                  <img v-if="option.image" :src="option.image" class="option-image" alt="">
-                  <div v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
-                       class="selected-answer-text"
-                       v-html="option.selectedText"></div>
-                </div>
-              </template>
+							<div 
+								class="question-container"
+								:class="settings.steps[currentStep].image ? 'image-grid' : ''"
+							>
+								<div class="text-part">
+									<div class="title">{{ settings.steps[currentStep].title }}</div>
+									<div 
+										v-if="settings.steps[currentStep].description"
+										class="description"
+										v-html="settings.steps[currentStep].description"
+									/>
+								</div>
+								<div class="image-part">
+									<img v-if="settings.steps[currentStep].image"
+									:src="settings.steps[currentStep].image" class="question-image" alt="">										
+								</div>
+							</div>
+
+							<div 
+								class="answers-grid"
+								:class="settings.steps[currentStep].view"
+							>
+								<template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
+									<div class="option" @click="optionClick(option.title, option.value)">
+										<label 
+											v-if="option.title"
+											:for="'radio' + currentStep + optionIndex"
+											:class="{'animate': checkAnimate(option.title)}"
+										>
+											<div class="option-container">
+												<img v-if="option.image" :src="option.image" class="option-image" alt="">
+												<span class="key">{{ alphabet[optionIndex] }}</span>
+												<div>{{ option.title }}</div>
+											</div>
+											<svg height="13" width="16">
+												<path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
+											</svg>
+										</label>
+										<input
+											class="input-radio"
+											type="radio"
+											:id="'radio' + currentStep + optionIndex"
+											:name="settings.steps[currentStep].title"
+											:disabled="answers[settings.steps[currentStep].title]"
+											:checked="answers[settings.steps[currentStep].title] === option.title"
+										>
+										<div 
+											v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
+											class="selected-answer-text"
+											v-html="option.selectedText"
+										/>
+									</div>
+								</template>
+							</div>
             </div>
           </template>
 
@@ -195,26 +227,23 @@
 
                     <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
                     <div class="block-button-wrap">
-                      <button type="button" class="btn relative w-full btn btn-primary" @click="printPdf()">
-											<span class="text">
+                      <button type="button" class="q-btn" @click="printPdf()">
 												Распечатать сейчас (pdf)
-											</span>
                       </button>
                     </div>
-                    <div class="form-group mt-3">
-                      <label class="">
-                        Отправить мне на электронную почту
-                      </label>
-                      <div class="flex mt-1">
-                        <input id="quiz-pdf-email" name="pdfEmail" type="email" :value="answers['email']"
-                               class="form-control flex-grow -mr-2">
-                        <div class="block-button-wrap">
-                          <button type="button" class="btn relative btn btn-primary" @click="sendPdf()">
-													<span contenteditable="false" class="text">
-														Отправить
-													</span>
-                          </button>
-                        </div>
+                    <div class="form-group">
+                      <label>Отправить мне на электронную почту</label>
+                      <div class="input-group">
+                        <input 
+													id="quiz-pdf-email" 
+													name="pdfEmail" 
+													type="email" 
+													:value="answers['email']"
+                          class="form-control"
+												>
+												<button type="button" class="q-btn" @click="sendPdf()">
+													Отправить
+												</button>
                       </div>
                     </div>
                   </div>
@@ -242,14 +271,16 @@
                     <section class="content-wrapper" style="width:794px;">
                       <section>
                         <div id="pdf-wrap" class="pdf-wrap" ref="pdf">
-                          <div class="fullName">
-                            {{ answers['name'] }}
-                          </div>
-                          <div class="lastName">
-                            {{ answers['last_name'] }}
-                          </div>
+													<div class="name-box">
+														<div class="fullName">
+															{{ answers['name'] }}
+														</div>
+														<div class="lastName">
+															{{ answers['last_name'] }}
+														</div>
+													</div>
                           <div class="image-wrap">
-                            <img :src="settings.certificate" alt="">
+                            <img :src="settings.certificate" width="792" height="1118" alt="">
                           </div>
                         </div>
                       </section>
