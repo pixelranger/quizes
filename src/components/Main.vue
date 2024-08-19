@@ -38,10 +38,10 @@
               <div class="title">
 								{{ getTitle(settings.steps[currentStep].title) }}
 							</div>
-              <div 
+              <div
 								v-if="settings.steps[currentStep].description"
                 class="description"
-                v-html="settings.steps[currentStep].description" 
+                v-html="settings.steps[currentStep].description"
 							/>
             </div>
 
@@ -135,13 +135,13 @@
             </div>
 
             <div v-if="settings.steps[currentStep].type === 'question'" class="top_content">
-							<div 
+							<div
 								class="question-container"
 								:class="settings.steps[currentStep].image ? 'image-grid' : ''"
 							>
 								<div class="text-part">
 									<div class="title">{{ settings.steps[currentStep].title }}</div>
-									<div 
+									<div
 										v-if="settings.steps[currentStep].description"
 										class="description"
 										v-html="settings.steps[currentStep].description"
@@ -149,17 +149,17 @@
 								</div>
 								<div class="image-part">
 									<img v-if="settings.steps[currentStep].image"
-									:src="settings.steps[currentStep].image" class="question-image" alt="">										
+									:src="settings.steps[currentStep].image" class="question-image" alt="">
 								</div>
 							</div>
 
-							<div 
+							<div
 								class="answers-grid"
 								:class="settings.steps[currentStep].view"
 							>
 								<template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
 									<div class="option" @click="optionClick(option.title, option.value)">
-										<label 
+										<label
 											v-if="option.title"
 											:for="'radio' + currentStep + optionIndex"
 											:class="{'animate': checkAnimate(option.title)}"
@@ -181,7 +181,7 @@
 											:disabled="answers[settings.steps[currentStep].title]"
 											:checked="answers[settings.steps[currentStep].title] === option.title"
 										>
-										<div 
+										<div
 											v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
 											class="selected-answer-text"
 											v-html="option.selectedText"
@@ -194,9 +194,9 @@
 
           <div v-if="progress === 'final'" class="top_content">
             <div class="title">
-              {{ answers['name'] }}, благодарим за прохождение теста!
+              {{ answers['name'] }}, благодарим за прохождение теста или опроса!
             </div>
-            <div class="description">
+            <div class="description" v-if="settings.hideDescriptionOnResult === false">
               Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}
               <template v-for="el in settings.result">
                 <div v-if="score >= el.from && score <= el.to">
@@ -234,10 +234,10 @@
                     <div class="form-group">
                       <label>Отправить мне на электронную почту</label>
                       <div class="input-group">
-                        <input 
-													id="quiz-pdf-email" 
-													name="pdfEmail" 
-													type="email" 
+                        <input
+													id="quiz-pdf-email"
+													name="pdfEmail"
+													type="email"
 													:value="answers['email']"
                           class="form-control"
 												>
@@ -268,7 +268,7 @@
                         <button type="button" id="share_tg" class="q-btn m-3 icon-telegram text-primary text-xl" @click="share('tg')">
 													<svg height="16" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 														<path d="M0.980933 6.09703C0.980933 6.09703 8.05735 3.02377 10.5116 1.9416C11.4524 1.50877 14.6429 0.123584 14.6429 0.123584C14.6429 0.123584 16.1155 -0.482382 15.9927 0.989309C15.9518 1.59533 15.6246 3.7163 15.2974 6.01047C14.8065 9.25692 14.2747 12.8063 14.2747 12.8063C14.2747 12.8063 14.1929 13.8019 13.4976 13.9751C12.8022 14.1482 11.6569 13.3691 11.4524 13.1959C11.2887 13.0661 8.38456 11.1182 7.32106 10.1659C7.03472 9.9062 6.70751 9.3868 7.36194 8.78078C8.83451 7.35234 10.5934 5.57763 11.6569 4.45221C12.1477 3.93275 12.6386 2.72076 10.5934 4.19245C7.68921 6.31348 4.82592 8.30463 4.82592 8.30463C4.82592 8.30463 4.17144 8.73746 2.94433 8.34788C1.71716 7.95836 0.285519 7.4389 0.285519 7.4389C0.285519 7.4389 -0.696122 6.78963 0.980933 6.09703Z" fill="currentColor"/>
-													</svg>													
+													</svg>
 												</button>
                       </div>
                     </div>
@@ -306,7 +306,7 @@
 
         <div v-if="!checkAttempts() && (progress !== 'final' || score < settings.resultPDF)" class="quiz-inner-bottom">
           <div class="button-container">
-            <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать тест</button>
+            <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
               {{ settings.steps[currentStep].button || 'OK' }}
             </button>
