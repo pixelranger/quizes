@@ -657,12 +657,18 @@ function sendPdf() {
   });
 }
 
+function stripHtmlTags(str) {
+  return str.replace(/<\/?[^>]+(>|$)/g, "");
+}
+
 function share(serviceName) {
   let url = '';
   const pageUrl = window.location.href;
   const title = encodeURIComponent(settings.title);
-  const text = encodeURIComponent(settings.description);
+  let text = encodeURIComponent(settings.description);
   const image = encodeURIComponent('');
+
+  text = stripHtmlTags(text);
 
   switch (serviceName) {
     case 'vk':
