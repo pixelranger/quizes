@@ -249,8 +249,8 @@
                   </div>
 
                   <div class="pdf-additional-block form-group">
-                    <div class="rating_link">
-                      <a class="link":href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
+                    <div class="rating_link"  v-if="settings.hideRatingLinkOnResult === false">
+                      <a class="link" :href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
                     </div>
                     <div>
                       <div class="share_label">Поделиться:</div>
@@ -558,8 +558,13 @@ function postData() {
 
 function setStep() {
   let url = new URL(window.location);
+  let newPathname = '/virtual' + url.pathname;
+  url.pathname = newPathname;
   url.searchParams.set('step', currentStep.value.toString());
+
   history.pushState({}, "", url);
+  console.log('v'+url.href);
+  
   if (typeof(ym) === 'function') {
     ym(settings.ymCount, 'hit', url.href);
   }
