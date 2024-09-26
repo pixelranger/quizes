@@ -841,7 +841,7 @@ const settings = JSON.stringify({
   ],
   "ratingLink": "/rating/",
   "ratingText": "Посмотреть рейтинг региона",
-  "resultPDF": 2,
+  "resultPDF": 1,
   "hideDescriptionOnResult": false, 
   "hideShareOnResult": false,
   "hideRatingLinkOnResult": false,
