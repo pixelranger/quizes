@@ -1,7 +1,4 @@
 <template>
-  <!--Link to compiled style.css-->
-  <link rel="stylesheet" href="style.css">
-
   <Main
     :firstname="firstname"
     :lastname="lastname"
