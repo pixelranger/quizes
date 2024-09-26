@@ -225,25 +225,27 @@
                              class="form-control w-full">
                     </div>
 
-                    <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
-                    <div class="block-button-wrap">
-                      <button type="button" class="q-btn" @click="printPdf()">
-												Распечатать сейчас (pdf)
-                      </button>
-                    </div>
-                    <div class="form-group">
-                      <label>Отправить мне на электронную почту</label>
-                      <div class="input-group">
-                        <input
-													id="quiz-pdf-email"
-													name="pdfEmail"
-													type="email"
-													:value="answers['email']"
-                          class="form-control"
-												>
-												<button type="button" class="q-btn" @click="sendPdf()">
-													Отправить
-												</button>
+                    <div id="printPdf">
+                      <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
+                      <div class="block-button-wrap">
+                        <button type="button" class="q-btn" @click="printPdf()">
+                          Распечатать сейчас (pdf)
+                        </button>
+                      </div>
+                      <div class="form-group">
+                        <label>Отправить мне на электронную почту</label>
+                        <div class="input-group">
+                          <input
+                            id="quiz-pdf-email"
+                            name="pdfEmail"
+                            type="email"
+                            :value="answers['email']"
+                            class="form-control"
+                          >
+                          <button type="button" class="q-btn" @click="sendPdf()">
+                            Отправить
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -553,7 +555,7 @@ function postData() {
     method: 'POST',
     headers: {'Content-Type': 'application/json;charset=utf-8'},
     body: JSON.stringify(postObj)
-  });
+  })
 }
 
 function setStep() {
@@ -562,7 +564,7 @@ function setStep() {
   history.pushState({}, "", url);
 
   if (!url.pathname.startsWith('/virtual')) {
-    
+
     let newPathname = '/virtual' + url.pathname;
     url.pathname = newPathname;
   }
@@ -642,6 +644,16 @@ function sendPdf() {
   fetch(settings.sendCertificateUrl, {
     method: "POST",
     body: formData,
+  }).then(response => {
+    if (response.status == 200) {
+      settings.generationPDF = false;
+      alert('Ваш сертификат отправлен на почту');
+    } else {
+        alert('Произошла ошибка, попробуйте позже');
+    }
+  })
+  .catch(error => {
+    alert('Произошла ошибка, попробуйте позже.');
   });
 }
 
