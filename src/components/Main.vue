@@ -602,8 +602,56 @@ function reloadQuiz() {
   window.location.reload();
 }
 
-function getPdfFile() {
-  return false
+async function getPdfFile() {
+  const pdfContent = document.getElementById('pdf-wrap')
+
+  let options = {
+    margin: 0,
+
+    filename: 'сертификат.pdf',
+
+    image: {
+      type: 'jpeg',
+      quality: 0.98
+    },
+
+    enableLinks: false,
+
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      scale: 1,
+      y: 0,
+      x: 0,
+      scrollY: 0,
+      scrollX: 0,
+      windowWidth: 794,
+      allowTaint: true,
+      ignoreElements(e) {
+        // Here, ignore external URL links and lazyload images
+        if ((e.tagName === "A" && e.host !== window.location.host) || e.getAttribute('loading') === "lazy") {
+          return true;
+        } else {
+          return false;
+        }
+      },
+    },
+
+    jsPDF: {
+      unit: 'in',
+      format: 'a4',
+      orientation: 'portrait'
+    }
+  }
+
+  const html2PdfSetup = html2pdf().set(options).from(pdfContent)
+  let pdfBlobUrl = await html2PdfSetup.output('bloburl')
+
+  if (pdfBlobUrl) {
+    const res = await fetch(pdfBlobUrl)
+    const blobFile = await res.blob()
+    return blobFile;
+  }
 }
 
 function printPdf() {
@@ -634,8 +682,8 @@ function printPdf() {
   html2pdf().set(options).from(pdf.value.innerHTML).toContainer().toCanvas().save();
 }
 
-function sendPdf() {
-  const pdf = getPdfFile();
+async function sendPdf() {
+  const pdf = await getPdfFile();
   const formData = new FormData();
   formData.append('method', 'sendMail');
   formData.append('certificate', new File([pdf], 'certificate'));
