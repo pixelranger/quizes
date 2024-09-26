@@ -1,4 +1,7 @@
 <template>
+  <!--Link to compiled style.css-->
+  <link rel="stylesheet" href="/quiz_widgets/variant-1/style.css">
+
   <Main
     :firstname="firstname"
     :lastname="lastname"
