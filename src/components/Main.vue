@@ -558,13 +558,17 @@ function postData() {
 
 function setStep() {
   let url = new URL(window.location);
-  let newPathname = '/virtual' + url.pathname;
-  url.pathname = newPathname;
   url.searchParams.set('step', currentStep.value.toString());
-
   history.pushState({}, "", url);
+
+  if (!url.pathname.startsWith('/virtual')) {
+    
+    let newPathname = '/virtual' + url.pathname;
+    url.pathname = newPathname;
+  }
+
   console.log('v'+url.href);
-  
+
   if (typeof(ym) === 'function') {
     ym(settings.ymCount, 'hit', url.href);
   }
