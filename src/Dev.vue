@@ -183,7 +183,7 @@ const settings = JSON.stringify({
   "post": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz",
   "sendCertificateUrl": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/api/send-fin-zosh-certificate",
   "monththeme_id": 2,
-  "attempts": 3,
+  "attempts": 3000,
   "generationPDF": true,
   "ymCount": 84939769,
   "steps": [
@@ -839,9 +839,12 @@ const settings = JSON.stringify({
       ]
     },
   ],
-  "ratingLink": "/estafeta/semejnye-finansy/rating/?regionId=1&amp;score=10",
+  "ratingLink": "/rating/",
   "ratingText": "Посмотреть рейтинг региона",
   "resultPDF": 2,
+  "hideDescriptionOnResult": false, 
+  "hideShareOnResult": false,
+  "hideRatingLinkOnResult": false,
   "result": [
     {
       from: 0,
