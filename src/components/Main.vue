@@ -211,13 +211,13 @@
               <div class="form text-left">
                 <form action="">
                   <div v-if="settings.generationPDF && score >= settings.resultPDF">
-                    <div class="mb-3" >
+                    <div class="mb-3" style="display:none;">
                       <label class="block mb-1">
                         Имя
                       </label>
                       <input id="quiz-pdf-name" name="pdfName" type="text" :value="answers['name']" class="form-control w-full">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" style="display:none;">
                       <label class="block mb-1">
                         Фамилия
                       </label>
