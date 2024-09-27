@@ -599,7 +599,24 @@ function nextClick() {
 }
 
 function reloadQuiz() {
-  window.location.reload();
+  clearAnswers();
+
+  currentStep.value = 6;
+  start();
+}
+
+function clearAnswers() {
+  const questionsFields = settings.steps.filter(step => step.type === 'question');
+  questionsFields.forEach(field => {
+    const title = field.title;
+    const currentValue = answers.value[title];
+
+    if (Array.isArray(currentValue)) {
+      answers.value[title] = [];
+    } else {
+      answers.value[title] = '';
+    }
+  })
 }
 
 async function getPdfFile() {
