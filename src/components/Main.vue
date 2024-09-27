@@ -236,10 +236,10 @@
                         <label>Отправить мне на электронную почту</label>
                         <div class="input-group">
                           <input
+                            v-model="answers['email']"
                             id="quiz-pdf-email"
                             name="pdfEmail"
                             type="email"
-                            :value="answers['email']"
                             class="form-control"
                           >
                           <button type="button" class="q-btn" @click="sendPdf()">
