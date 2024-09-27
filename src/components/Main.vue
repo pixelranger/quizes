@@ -603,8 +603,6 @@ function reloadQuiz() {
 }
 
 async function getPdfFile() {
-  const pdfContent = document.getElementById('pdf-wrap')
-
   let options = {
     margin: 0,
 
@@ -644,7 +642,7 @@ async function getPdfFile() {
     }
   }
 
-  const html2PdfSetup = html2pdf().set(options).from(pdfContent)
+  const html2PdfSetup = html2pdf().set(options).from(pdf.value.innerHTML)
   let pdfBlobUrl = await html2PdfSetup.output('bloburl')
 
   if (pdfBlobUrl) {
