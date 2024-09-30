@@ -236,10 +236,10 @@
                         <label>Отправить мне на электронную почту</label>
                         <div class="input-group">
                           <input
+                            v-model="answers['email']"
                             id="quiz-pdf-email"
                             name="pdfEmail"
                             type="email"
-                            :value="answers['email']"
                             class="form-control"
                           >
                           <button type="button" class="q-btn" @click="sendPdf()">
@@ -599,7 +599,24 @@ function nextClick() {
 }
 
 function reloadQuiz() {
-  window.location.reload();
+  clearAnswers();
+
+  currentStep.value = 6;
+  start();
+}
+
+function clearAnswers() {
+  const questionsFields = settings.steps.filter(step => step.type === 'question');
+  questionsFields.forEach(field => {
+    const title = field.title;
+    const currentValue = answers.value[title];
+
+    if (Array.isArray(currentValue)) {
+      answers.value[title] = [];
+    } else {
+      answers.value[title] = '';
+    }
+  })
 }
 
 async function getPdfFile() {
