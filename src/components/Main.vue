@@ -26,9 +26,11 @@
 								<img v-if="settings.showStartImage && settings.startImage"
 								:src="settings.startImage" class="start-image" alt="">
 							</div>
-							<div class="description" v-html="settings.description"></div>
+
+							<div class="description" v-if="!checkAttempts()" v-html="settings.description"></div>
+							<div class="description" v-else-if="settings.description_fail_attempts" v-html="settings.description_fail_attempts"></div>
 						</div>
-            <div v-if="checkAttempts()" class="quiz-error">
+            <div v-if="checkAttempts() && !settings.description_fail_attempts" class="quiz-error">
               Вы исчерапали {{ settings.attempts }} попытки. Прохождение теста недоступно.
             </div>
           </template>
