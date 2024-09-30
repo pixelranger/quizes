@@ -201,8 +201,7 @@
             <div class="description" v-if="settings.hideDescriptionOnResult === false">
               Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}
               <template v-for="el in settings.result">
-                <div v-if="score >= el.from && score <= el.to">
-                  {{ el.text }}
+                <div v-if="score >= el.from && score <= el.to" v-html="el.text">
                 </div>
               </template>
             </div>
