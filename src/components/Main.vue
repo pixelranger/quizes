@@ -209,7 +209,7 @@
 
           <div v-if="progress === 'final'" class="top_content">
             <div class="title">
-              {{ answers['name'] }}, благодарим за прохождение теста или опроса!
+              {{ answers['name'] }}, благодарим за прохождение теста.
             </div>
             <div class="description" v-if="settings.hideDescriptionOnResult === false">
               <div class="score-message">Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}</div>
