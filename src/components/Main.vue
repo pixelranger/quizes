@@ -27,8 +27,21 @@
 								:src="settings.startImage" class="start-image" alt="">
 							</div>
 
-							<div class="description" v-if="!checkAttempts()" v-html="settings.description"></div>
-							<div class="description" v-else-if="settings.description_fail_attempts" v-html="settings.description_fail_attempts"></div>
+							<div class="description">
+								<div v-if="!checkAttempts()" v-html="settings.description"></div>
+								<div v-else-if="settings.description_fail_attempts" v-html="settings.description_fail_attempts"></div>
+
+								<div v-if="progress === 'start'" class="timing">
+									<span data-qa="icon" aria-hidden="true" class="icon">
+										<svg width="12" height="12" viewBox="0 0 12 12" fill="none" data-qa="animated-clock">
+											<circle cx="6" cy="6" fill="#012941" r="6"></circle>
+											<line x1="6" y1="6" x2="6" y2="3" stroke="#FEFDFA" stroke-width="1.2" stroke-linecap="round"></line>
+											<line x1="6" y1="6" x2="6" y2="3" stroke="#FEFDFA" stroke-width="1.2" stroke-linecap="round"></line>
+										</svg>
+									</span>
+									{{ settings.timing }}
+								</div>
+							</div>
 						</div>
             <div v-if="checkAttempts() && !settings.description_fail_attempts" class="quiz-error">
               Вы исчерапали {{ settings.attempts }} попытки. Прохождение теста недоступно.
@@ -199,7 +212,7 @@
               {{ answers['name'] }}, благодарим за прохождение теста или опроса!
             </div>
             <div class="description" v-if="settings.hideDescriptionOnResult === false">
-              Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}
+              <div class="score-message">Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}</div>
               <template v-for="el in settings.result">
                 <div v-if="score >= el.from && score <= el.to" v-html="el.text">
                 </div>
@@ -315,16 +328,6 @@
             </button>
             <button v-if="progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
             <div class="info">Нажмите <b>Enter ↵</b></div>
-          </div>
-          <div v-if="progress === 'start'" class="timing">
-            <span data-qa="icon" aria-hidden="true" class="icon">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" data-qa="animated-clock">
-								<circle cx="6" cy="6" fill="#012941" r="6"></circle>
-								<line x1="6" y1="6" x2="6" y2="3" stroke="#FEFDFA" stroke-width="1.2" stroke-linecap="round"></line>
-								<line x1="6" y1="6" x2="6" y2="3" stroke="#FEFDFA" stroke-width="1.2" stroke-linecap="round"></line>
-							</svg>
-            </span>
-            {{ settings.timing }}
           </div>
         </div>
       </div>
