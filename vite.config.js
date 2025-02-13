@@ -33,7 +33,7 @@ export default defineConfig({
   },
   // Ensure preview mode is correctly handled
   preview: {
-    open: true,
+    // open: true,
     port: 5137,
     entry: fileURLToPath(new URL('./src/dev.js', import.meta.url))
   }

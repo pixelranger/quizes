@@ -1,8 +1,7 @@
 <template>
   <div class="quiz-container">
-
     <div class="quiz-content">
-      <div class="quiz-progress-container">
+      <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
           <div class="value" :style="{'width': progressValue + '%'}"></div>
         </div>
@@ -19,19 +18,18 @@
           </div>
 
           <template v-if="progress === 'start'">
-
 						<div class="start-container">
-							<div class="title" v-html="settings.title"></div>
+							<div class="title" v-html="settings.startScreenTitle"></div>
 							<div class="image">
-								<img v-if="settings.showStartImage && settings.startImage"
-								:src="settings.startImage" class="start-image" alt="">
+								<img v-if="settings.showStartImage && settings.startScreenImage"
+								:src="settings.startScreenImage" class="start-image" alt="">
 							</div>
 
 							<div class="description">
-								<div v-if="!checkAttempts()" v-html="settings.description"></div>
+								<div v-if="!checkAttempts()" v-html="settings.startScreenDescription"></div>
 								<div v-else-if="settings.description_fail_attempts" v-html="settings.description_fail_attempts"></div>
 
-								<div v-if="progress === 'start'" class="timing">
+								<div v-if="progress === 'start' && settings.timeString" class="timing">
 									<span data-qa="icon" aria-hidden="true" class="icon">
 										<svg width="12" height="12" viewBox="0 0 12 12" fill="none" data-qa="animated-clock">
 											<circle cx="6" cy="6" fill="#012941" r="6"></circle>
@@ -39,7 +37,7 @@
 											<line x1="6" y1="6" x2="6" y2="3" stroke="#FEFDFA" stroke-width="1.2" stroke-linecap="round"></line>
 										</svg>
 									</span>
-									{{ settings.timing }}
+									{{ settings.timeString }}
 								</div>
 							</div>
 						</div>
@@ -49,165 +47,276 @@
           </template>
 
           <template v-if="progress === 'questions'">
-            <div v-if="settings.steps[currentStep].type === 'notice'" class="top_content">
-              <div class="title">
-								{{ getTitle(settings.steps[currentStep].title) }}
-							</div>
-              <div
-								v-if="settings.steps[currentStep].description"
-                class="description"
-                v-html="settings.steps[currentStep].description"
-							/>
-            </div>
-
-            <div v-if="settings.steps[currentStep].type === 'form'" class="top_content">
-              <div class="title">
-                {{ settings.steps[currentStep].title }}
-                <template v-if="settings.steps[currentStep].required">*</template>
-              </div>
-              <div v-if="settings.steps[currentStep].description"
-                   class="description"
-                   v-html="settings.steps[currentStep].description"></div>
-              <template v-for="(field, fieldIndex) in settings.steps[currentStep].fields">
-                <div v-if="field.type && field.type === 'select'" class="field field-select">
-                  <label v-if="field.label">
-                    {{ field.label }}
-                    <template v-if="field.required">*</template>
-                  </label>
-                  <select v-if="field.options"
-                          :name="field.name"
-                          v-model="answers[field.name]"
-                          @change="inputChange(field.name, $event)">
-                    <option v-for="option in field.options" :value="option.id">
-                      {{ option.title }}
-                    </option>
-                  </select>
-                </div>
-
-                <div v-if="field.type && field.type === 'input'"
-                     class="field"
-                     :class="{'error': !answers[field.name] || checkMask(field)}">
-                  <label v-if="field.label">
-                    {{ field.label }}
-                    <template v-if="field.required">*</template>
-                  </label>
-                  <input class="input-text"
-                         type="text"
-                         :name="field.name"
-                         :placeholder="field.placeholder"
-                         :value="answers[field.name]"
-                         @input="inputChange(field.name, $event)">
-                  <div v-if="field.example" class="example">
-                    Пример: <i>{{ field.example }}</i>
+            <template v-for="(block, blockIndex) in settings.steps[currentStep].blocks">
+              <template v-if="checkIfBlockVisible(block)">
+                <template v-if="block.type === 'header'">
+                  <div class="title">
+                    {{ block.value }}
+                    <template v-if="settings.steps[currentStep].required">*</template>
                   </div>
-                </div>
-
-                <div v-if="field.type && field.type === 'radio'" class="field field-radio">
-                  <div class="radio-item">
-                    <input class="input-radio"
-                           type="radio"
-                           :id="'radio' + currentStep + fieldIndex"
-                           :name="field.name"
-                           :value="field.value"
-                           @change="inputChange(field.name, $event)"
-                    >
-                    <label :for="'radio' + currentStep + fieldIndex">
-                      {{ field.label }}
+                </template>
+                <template v-if="block.type === 'paragraph'">
+                  <div
+                      class="description"
+                      v-html="block.value"
+                  />
+                </template>
+                <template v-if="block.type === 'info'">
+                  <div class="title">
+                    {{ block.title }}
+                  </div>
+                  <div
+                      v-if="block.description && block.description.length > 0"
+                      class="description"
+                      v-html="block.description"
+                  />
+                </template>
+                <template v-if="block.type === 'formInput'">
+                  <div
+                      class="field"
+                      :class="{'error': !answers[block.name] || checkMask(block)}"
+                  >
+                    <label v-if="block.label">
+                      {{ block.label }}
+                      <template v-if="block.required">*</template>
                     </label>
+                    <input class="input-text"
+                           type="text"
+                           :name="block.id"
+                           :placeholder="block.placeholder"
+                           :value="answers[block.id]"
+                           @input="inputChange(block.id, $event)">
+                    <div v-if="block.example" class="example">
+                      Пример: <i>{{ block.example }}</i>
+                    </div>
                   </div>
-                </div>
-
-                <div v-if="field.type && field.type === 'checkbox'" class="field field-checkbox">
-                  <div class="checkbox-item">
-                    <input class="input-checkbox"
-                           type="checkbox"
-                           :id="'checkbox' + currentStep + fieldIndex"
-                           :name="field.name"
-                           :value="field.value"
-                           @change="checkboxChange(field.name, $event)"
-                    >
-                    <label :for="'checkbox' + currentStep + fieldIndex">
-                      {{ field.label }}
+                </template>
+                <template v-if="block.type === 'formSelect'">
+                  <div class="field field-select">
+                    <label v-if="block.label">
+                      {{ block.label }}
+                      <template v-if="block.required">*</template>
                     </label>
+                    <select v-if="block.options"
+                            :name="block.id"
+                            v-model="answers[block.id]"
+                            @change="inputChange(block.id, $event)">
+                      <option v-for="option in block.options" :value="option.id">
+                        {{ option.label }}
+                      </option>
+                    </select>
                   </div>
-                </div>
+                </template>
+                <template v-if="block.type === 'formRange'">
+                  <div class="field field-range">
+                    <label v-if="block.label">
+                      {{ block.label }}
+                      <template v-if="block.required">*</template>
+                    </label>
+                    <input class="input-range"
+                           type="range"
+                           :name="block.name"
+                           :min="block.min"
+                           :max="block.max"
+                           v-model="answers[block.id]"
+                           @input="inputChange(block.id, $event)">
+                    <span class="input-range-val">{{ answers[block.id] }}</span>
+                  </div>
+                </template>
+                <template v-if="block.type === 'formRadio'">
+                  <div>
+                    <label v-if="block.label">
+                      {{ block.label }}
+                      <template v-if="block.required">*</template>
+                    </label>
+                    <div v-for="option in block.options" class="field field-radio">
+                      <div  class="radio-item">
+                        <input class="input-radio"
+                               type="radio"
+                               :id="'radio' + currentStep + blockIndex + option.id"
+                               :name="block.id"
+                               :value="option.id"
+                               @change="inputChange(block.id, $event)"
+                        >
+                        <label :for="'radio' + currentStep + blockIndex">
+                          {{ option.label }}
+                        </label>
+                      </div>
+                    </div>
+                    <div v-if="block.other" class="field field-radio">
+                      <div  class="radio-item">
+                        <input class="input-radio"
+                               type="radio"
+                               :id="'radio' + currentStep + blockIndex + '__$OTHER'"
+                               :name="block.id"
+                               :value="'__$OTHER__'"
+                               @change="inputChange(block.id, $event)"
+                        >
+                        <label :for="'radio' + currentStep + blockIndex">
+                          Другое
+                        </label>
+                      </div>
+                    </div>
 
-                <div v-if="field.type && field.type === 'range'" class="field field-range">
-                  <label v-if="field.label">
-                    {{ field.label }}
-                    <template v-if="field.required">*</template>
-                  </label>
-                  <input class="input-range"
-                         type="range"
-                         :name="field.name"
-                         :min="field.min"
-                         :max="field.max"
-                         v-model="answers[field.name]"
-                         @input="inputChange(field.name, $event)">
-                  <span class="input-range-val">{{ answers[field.name] }}</span>
+                    <div
+                        v-if="block.other && answers[block.id] && answers[block.id].includes('__$OTHER__')"
+                        class="field"
+                        :class="{'error': !answers[block.name] || checkMask(block)}"
+                    >
+                      <label>
+                      </label>
+                      <input class="input-text"
+                             type="text"
+                             :name="block.id"
+                             :placeholder="block.placeholder"
+                             :value="answers[block.id + '__$OTHER']"
+                             @input="inputChange(block.id  + '__$OTHER', $event)">
+                      <div v-if="block.example" class="example">
+                        Пример: <i>{{ block.example }}</i>
+                      </div>
+                    </div>
+                  </div>
+
+                </template>
+
+                <template v-if="block.type === 'formCheckbox'">
+                  <div>
+                    <label v-if="block.label">
+                      {{ block.label }}
+                      <template v-if="block.required">*</template>
+                    </label>
+                    <div v-for="option in block.options" class="field field-checkbox">
+                      <div  class="checkbox-item">
+                        <input class="input-checkbox"
+                               type="checkbox"
+                               :id="'checkbox' + currentStep + blockIndex + block.id + option.id"
+                               :name="block.id"
+                               :value="option.id"
+                               @change="checkboxChange(block.id, $event)"
+                        >
+                        <label :for="'checkbox' + currentStep + blockIndex">
+                          {{ option.label }}
+                        </label>
+                      </div>
+                    </div>
+                    <div v-if="block.other" class="field field-checkbox">
+                      <div  class="checkbox-item">
+                        <input class="input-checkbox"
+                               type="checkbox"
+                               :id="'checkbox' + currentStep + blockIndex + block.id + '__$OTHER'"
+                               :name="block.id"
+                               :value="'__$OTHER__'"
+                               @change="checkboxChange(block.id, $event)"
+                        >
+                        <label :for="'checkbox' + currentStep + blockIndex">
+                            Другое
+                        </label>
+                      </div>
+                    </div>
+                    <div
+                        v-if="block.other && answers[block.id] && answers[block.id].includes('__$OTHER__')"
+                        class="field"
+                        :class="{'error': !answers[block.name] || checkMask(block)}"
+                    >
+                      <label>
+
+                      </label>
+                      <input class="input-text"
+                             type="text"
+                             :name="block.id"
+                             :placeholder="block.placeholder"
+                             :value="answers[block.id + '__$OTHER']"
+                             @input="inputChange(block.id  + '__$OTHER', $event)">
+                      <div v-if="block.example" class="example">
+                        Пример: <i>{{ block.example }}</i>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+
+                <template v-if="block.type === 'question'">
+                  <div class="top_content">
+                    <div
+                        class="question-container"
+                        :class="block.image ? 'image-grid' : ''"
+                    >
+                      <div class="text-part">
+                        <div class="title">{{ block.title }}</div>
+                        <div
+                            v-if="block.description"
+                            class="description"
+                            v-html="block.description"
+                        />
+                      </div>
+                      <div class="image-part">
+                        <img v-if="block.image"
+                             :src="block.image" class="question-image" alt="">
+                      </div>
+                    </div>
+
+                    <div
+                        class="answers-grid"
+                        :class="block.view"
+                    >
+                      <template v-for="(option, optionIndex) in block.options" :key="option.title">
+                        <div class="option" @click="optionClick(option.title, option.value, block)">
+                          <label
+                              v-if="option.title"
+                              :for="'radio' + currentStep + optionIndex"
+                              :class="{'animate': checkAnimate(block, option.title)}"
+                          >
+                            <div class="option-container">
+                              <img v-if="option.image" :src="option.image" class="option-image" alt="">
+                              <span class="key">{{ alphabet[optionIndex] }}</span>
+                              <div>{{ option.title }}</div>
+                            </div>
+                            <svg height="13" width="16">
+                              <path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
+                            </svg>
+                          </label>
+                          <input
+                              class="input-radio"
+                              type="radio"
+                              :id="'radio' + block.id + optionIndex"
+                              :name="block.id"
+                              :disabled="answers[block.title]"
+                              :checked="answers[block.title] === option.title"
+                          >
+                          <div
+                              v-if="answers[block.title] === option.title && option.selectedText"
+                              class="selected-answer-text"
+                              v-html="option.selectedText"
+                          />
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+
+                <div v-if="block.type === 'notice'" class="top_content">
+                  <div class="title">
+                    {{ getTitle(block.title) }}
+                  </div>
+                  <div
+                      v-if="block.description"
+                      class="description"
+                      v-html="block.description"
+                  />
                 </div>
               </template>
-            </div>
 
-            <div v-if="settings.steps[currentStep].type === 'question'" class="top_content">
-							<div
-								class="question-container"
-								:class="settings.steps[currentStep].image ? 'image-grid' : ''"
-							>
-								<div class="text-part">
-									<div class="title">{{ settings.steps[currentStep].title }}</div>
-									<div
-										v-if="settings.steps[currentStep].description"
-										class="description"
-										v-html="settings.steps[currentStep].description"
-									/>
-								</div>
-								<div class="image-part">
-									<img v-if="settings.steps[currentStep].image"
-									:src="settings.steps[currentStep].image" class="question-image" alt="">
-								</div>
-							</div>
 
-							<div
-								class="answers-grid"
-								:class="settings.steps[currentStep].view"
-							>
-								<template v-for="(option, optionIndex) in settings.steps[currentStep].options" :key="option.title">
-									<div class="option" @click="optionClick(option.title, option.value)">
-										<label
-											v-if="option.title"
-											:for="'radio' + currentStep + optionIndex"
-											:class="{'animate': checkAnimate(option.title)}"
-										>
-											<div class="option-container">
-												<img v-if="option.image" :src="option.image" class="option-image" alt="">
-												<span class="key">{{ alphabet[optionIndex] }}</span>
-												<div>{{ option.title }}</div>
-											</div>
-											<svg height="13" width="16">
-												<path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>
-											</svg>
-										</label>
-										<input
-											class="input-radio"
-											type="radio"
-											:id="'radio' + currentStep + optionIndex"
-											:name="settings.steps[currentStep].title"
-											:disabled="answers[settings.steps[currentStep].title]"
-											:checked="answers[settings.steps[currentStep].title] === option.title"
-										>
-										<div
-											v-if="answers[settings.steps[currentStep].title] === option.title && option.selectedText"
-											class="selected-answer-text"
-											v-html="option.selectedText"
-										/>
-									</div>
-								</template>
-							</div>
-            </div>
+
+
+            </template>
+
           </template>
 
-          <div v-if="progress === 'final'" class="top_content">
+          <div v-if="progress === 'final' && settings.type === 0">
+            Спасибо! Ваши данные учтены
+          </div>
+          <div v-if="progress === 'final' && settings.type === 1" class="top_content">
             <div class="title">
               {{ answers['name'] }}, благодарим за прохождение теста.
             </div>
@@ -220,7 +329,7 @@
             </div>
           </div>
 
-          <div v-if="progress === 'final'" class="result-grid" id="result-pdf">
+          <div v-if="progress === 'final' && settings.type === 1" class="result-grid" id="result-pdf">
             <div class="result-grid-left md:col-span-6 xl:col-span-5">
               <div class="form text-left">
                 <form action="">
@@ -320,14 +429,17 @@
           </div>
         </div>
 
-        <div v-if="!checkAttempts() && (progress !== 'final' || score < settings.resultPDF)" class="quiz-inner-bottom">
+        <div v-if="!checkAttempts() && (progress !== 'final' || (settings.type === 1 && score < settings.resultPDF))" class="quiz-inner-bottom">
           <div class="button-container">
             <button v-if="progress === 'start'" class="q-btn next" @click="start()">Начать</button>
             <button v-if="progress === 'questions'" class="q-btn next" @click="nextClick()">
               {{ settings.steps[currentStep].button || 'OK' }}
             </button>
-            <button v-if="progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
-            <div class="info">Нажмите <b>Enter ↵</b></div>
+            <button v-if="settings.type === 1 && progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
+            <div v-if="settings.type === 1" class="info">Нажмите <b>Enter ↵</b></div>
+            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">
+              Вернуться в начало
+            </button>
           </div>
         </div>
       </div>
@@ -338,6 +450,7 @@
 <script setup>
 import { ref, defineProps, watch } from 'vue';
 import html2pdf from "html2pdf.js/dist/html2pdf.bundle"
+import logipar from 'logipar';
 
 const props = defineProps({
   firstname: {
@@ -351,10 +464,10 @@ const props = defineProps({
   },
   settings: {
     type: String
-  }
+  },
 });
 
-let settings;
+let settings = ref({});
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 let progress = ref('start');
 let currentStep = ref(0);
@@ -365,7 +478,7 @@ let answers = ref({});
 let score = ref(0);
 let maxScore = ref(0);
 let pdf = ref();
-
+console.log(props)
 for (let key in props) {
   if (key === 'firstname') {
     answers.value['name'] = props[key];
@@ -377,11 +490,40 @@ for (let key in props) {
     answers.value['email'] = props[key];
   }
   if (key === 'settings') {
-    settings = JSON.parse(props[key]);
+    settings.value = JSON.parse(props[key]);
   }
 }
 
-settings.steps.forEach(step => {
+console.log(settings.value)
+if (settings.value.type === 0) {
+  progress.value = 'questions';
+}
+
+settings.value.steps.forEach(step => {
+  if (!step.blocks) {
+    return;
+  }
+
+  step.blocks.forEach(block => {
+    if (!block.type) {
+      console.log('Block type is not defined', block);
+      return;
+    }
+    if (block.type === 'question') {
+      maxScore.value++;
+      if (block.multiple) {
+        answers.value[block.title] = [];
+      }
+    }
+
+    if (block.type === 'formRange') {
+      answers.value[block.id] = block.value || block.min;
+    }
+
+    if (block.type === 'formCheckbox') {
+      answers.value[block.id] = [];
+    }
+  });
   if (step.type === 'form') {
     step.fields.forEach(field => {
       if (field.type === 'range') {
@@ -393,17 +535,11 @@ settings.steps.forEach(step => {
     })
   }
 
-  if (step.type === 'question') {
-    maxScore.value++;
-    if (step.multiple) {
-      answers.value[step.title] = [];
-    }
-  }
 });
 
 const refParam = get('ref');
 if (refParam){
-  localStorage.setItem('ref-' + settings.id, refParam);
+  localStorage.setItem('ref-' + settings.value.id, refParam);
 }
 
 function get(name){
@@ -412,23 +548,23 @@ function get(name){
 }
 
 function checkAttempts() {
-  const position = localStorage.getItem('position-' + settings.id);
-  return parseInt(position) > settings.attempts && position !== null;
+  const position = localStorage.getItem('position-' + settings.value.id);
+  return parseInt(position) > settings.value.attempts && position !== null;
 }
 
 function progressCalc() {
-  progressValue.value = (currentStep.value * (100 / settings.steps.length)).toFixed();
+  progressValue.value = (currentStep.value * (100 / settings.value.steps.length)).toFixed();
 }
 
 function getTitle(ttl) {
   return ttl.replace(/{name}/g, answers.value['name']);
 }
 
-function checkAnimate(title) {
-  if (settings.steps[currentStep.value].multiple) {
-    return answers.value[settings.steps[currentStep.value].title].includes(title);
+function checkAnimate(block, title) {
+  if (block.multiple) {
+    return answers.value[block.title].includes(title);
   } else {
-    return answers.value[settings.steps[currentStep.value].title] === title;
+    return answers.value[block.title] === title;
   }
 }
 
@@ -462,10 +598,10 @@ function checkMask(field) {
 function verifyStep() {
   let countError = 0;
 
-  const step = settings.steps[currentStep.value];
+  const step = settings.value.steps[currentStep.value];
 
   if (step.type === 'question' && step.required) {
-    if (settings.steps[currentStep.value].multiple) {
+    if (settings.value.steps[currentStep.value].multiple) {
       if (!answers.value[step.title].length) {
         countError++;
       }
@@ -506,6 +642,10 @@ function inputChange(name, e) {
 }
 
 function checkboxChange(name, e) {
+  if (!answers.value[name]) {
+    answers.value[name] = [];
+  }
+
   if (answers.value[name].includes(e.target.value)) {
     answers.value[name] = answers.value[name].filter(el => el !== e.target.value);
   } else {
@@ -514,10 +654,9 @@ function checkboxChange(name, e) {
   verifyStep();
 }
 
-function optionClick(a, v) {
-  const q = settings.steps[currentStep.value].title;
-
-  if (settings.steps[currentStep.value].multiple) {
+function optionClick(a, v, block) {
+  const q = block.title;
+  if (block.multiple) {
     if (!answers.value[q].includes(a)) {
       answers.value[q].push(a);
       score.value += parseInt(v);
@@ -532,13 +671,13 @@ function optionClick(a, v) {
 
 function postData() {
   let position;
-  if (localStorage.getItem('position-' + settings.id) === null) {
+  if (localStorage.getItem('position-' + settings.value.id) === null) {
     position = 1;
   } else {
-    position = parseInt(localStorage.getItem('position-' + settings.id));
+    position = parseInt(localStorage.getItem('position-' + settings.value.id));
     position = position + 1;
   }
-  localStorage.setItem('position-' + settings.id, position);
+  localStorage.setItem('position-' + settings.value.id, position);
 
   let uuid = '';
   if (localStorage.getItem('_ym_uid') !== null) {
@@ -549,13 +688,13 @@ function postData() {
     'answers': answers.value,
     'position': position,
     'uuid': uuid,
-    'monththeme_id': settings.monththeme_id,
-    'quiz_id': settings.id,
-    'ref': localStorage.getItem('ref-' + settings.id),
+    'monththeme_id': settings.value.monththeme_id,
+    'quiz_id': settings.value.id,
+    'ref': localStorage.getItem('ref-' + settings.value.id),
     'score': score.value,
   };
 
-  fetch(settings.post, {
+  fetch(settings.value.post, {
     method: 'POST',
     headers: {'Content-Type': 'application/json;charset=utf-8'},
     body: JSON.stringify(postObj)
@@ -576,7 +715,7 @@ function setStep() {
   console.log('v'+url.href);
 
   if (typeof(ym) === 'function') {
-    ym(settings.ymCount, 'hit', url.href);
+    ym(settings.value.ymCount, 'hit', url.href);
   }
 }
 
@@ -590,7 +729,7 @@ function next() {
   progressCalc();
   setStep();
 
-  if (currentStep.value === settings.steps.length) {
+  if (currentStep.value === settings.value.steps.length) {
     progress.value = 'final';
     postData();
   }
@@ -610,7 +749,7 @@ function reloadQuiz() {
 }
 
 function clearAnswers() {
-  const questionsFields = settings.steps.filter(step => step.type === 'question');
+  const questionsFields = settings.value.steps.filter(step => step.type === 'question');
   questionsFields.forEach(field => {
     const title = field.title;
     const currentValue = answers.value[title];
@@ -708,12 +847,12 @@ async function sendPdf() {
   formData.append('certificate', new File([pdf], 'certificate'));
   formData.append('email', answers.value['email']);
 
-  fetch(settings.sendCertificateUrl, {
+  fetch(settings.value.sendCertificateUrl, {
     method: "POST",
     body: formData,
   }).then(response => {
     if (response.status == 200) {
-      settings.generationPDF = false;
+      settings.value.generationPDF = false;
       alert('Ваш сертификат отправлен на почту');
     } else {
         alert('Произошла ошибка, попробуйте позже');
@@ -731,8 +870,8 @@ function stripHtmlTags(str) {
 function share(serviceName) {
   let url = '';
   const pageUrl = window.location.href;
-  const title = encodeURIComponent(settings.title);
-  let text = encodeURIComponent(settings.description);
+  const title = encodeURIComponent(settings.value.title);
+  let text = encodeURIComponent(settings.value.description);
   const image = encodeURIComponent('');
 
   text = stripHtmlTags(text);
@@ -758,6 +897,75 @@ function share(serviceName) {
   window.open(url, '', 'toolbar=0,status=0,scrollbars=1,width=626,height=436');
 }
 
+function checkIfBlockVisible(block) {
+  if (!block.conditions) {
+    return true;
+  }
+
+  if (block.conditions && !block.conditions.enabled) {
+    return true;
+  }
+
+  function evaluateConditions(conditions, context) {
+    let conditionString = '';
+
+    conditions.forEach((condition, index) => {
+      const fieldValue = context[condition.field] || '';
+      const conditionValue = condition.value;
+      const operator = condition.operator === 'equal' ? '===' : '!==';
+
+      conditionString += `"${fieldValue}" ${operator} "${conditionValue}"`;
+
+      if (index !== conditions.length - 1) {
+        const nextOperator = conditions[index + 1].toPreviousFieldOperator.toUpperCase();
+        conditionString += ` ${nextOperator} `;
+      }
+    });
+
+    conditionString = conditionString.replace(/\bAND\b/g, '&&').replace(/\bOR\b/g, '||');
+
+    try {
+      return new Function(`return ${conditionString}`)();
+    } catch (e) {
+      console.error('Error evaluating condition string:', e);
+      return false;
+    }
+  }
+
+  let conditionString = '';
+
+  const context = {};
+  block.conditions.list.forEach((condition, index) => {
+    context[condition.field] = answers.value[condition.field] || '';
+    context[condition.field + 'FILTER'] = condition.value;
+    let fieldValue = answers.value[condition.field] || '';
+    if (condition.operator === 'equal') {
+      conditionString += '"' + condition.field + '"' + '="' + condition.field + 'FILTER"' ;
+    } else if (condition.operator === 'notEqual') {
+      conditionString += 'NOT' + '"' + condition.field + '"' + '="' + condition.field + 'FILTER"' ;
+    }
+    // console.log(answers.value[condition.field])
+    // conditionString += answers.value[condition.field] + ' ' + (condition.operator === 'equal' ? '=' : ) + ' ' + condition.value;
+    if (index !== block.conditions.list.length - 1) {
+      if (block.conditions.list[index + 1] && block.conditions.list[index + 1].toPreviousFieldOperator) {
+        conditionString += ' ' + block.conditions.list[index + 1].toPreviousFieldOperator.toUpperCase() + ' ';
+      } else {
+        conditionString += ' '
+      }
+      // if (condition.toPreviousFieldOperator) {
+      //   conditionString += ' ' + condition.toPreviousFieldOperator.toUpperCase() + ' ';
+      // } else {
+      // }
+      // conditionString += ' '
+
+    }
+  });
+
+  console.log(evaluateConditions(block.conditions.list, context))
+
+  return evaluateConditions(block.conditions.list, context);
+}
+
 watch([currentStep, progress], (newVal, prevVal) => {
   if (newVal !== prevVal) {
     animateStep.value = true;
@@ -768,6 +976,10 @@ watch([currentStep, progress], (newVal, prevVal) => {
 });
 
 document.addEventListener('keydown', e => {
+  if (settings.value.type !== 1) {
+    return;
+  }
+
   if (e.key === 'Enter') {
     if (progress.value === 'start') {
       progress.value = 'questions';
@@ -781,5 +993,43 @@ document.addEventListener('keydown', e => {
     }
   }
 });
+
+window.mfQuizSetStep = function (step) {
+  if (typeof settings.value.steps[step] === 'undefined') {
+    return;
+  }
+  currentStep.value = step;
+  progress.value = 'questions';
+  progressCalc();
+}
+
+window.mfQuizRegisterNewSettings = function (newSettings) {
+  settings.value = JSON.parse(JSON.stringify(newSettings));
+  // currentStep.value = 0;
+  // progress.value = 'start';
+  // answers.value = {};
+  // score.value = 0;
+  // maxScore.value = 0;
+
+  // settings.steps.forEach(step => {
+  //   if (step.type === 'form') {
+  //     step.fields.forEach(field => {
+  //       if (field.type === 'range') {
+  //         answers.value[field.name] = field.value || field.min;
+  //       }
+  //       if (field.type === 'checkbox') {
+  //         answers.value[field.name] = [];
+  //       }
+  //     })
+  //   }
+  //
+  //   if (step.type === 'question') {
+  //     maxScore.value++;
+  //     if (step.multiple) {
+  //       answers.value[step.title] = [];
+  //     }
+  //   }
+  // });
+}
 
 </script>
