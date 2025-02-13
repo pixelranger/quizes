@@ -29,6 +29,7 @@
 body {
 	margin: 0;
 	padding: 0;
+	font-family: inherit;
 }
 
 	
@@ -719,6 +720,8 @@ body {
 
 
 .quiz-content .field-select select {
+	@apply min-w-80;
+
 	border: 1px solid;
 	border-color: #d1d5db;
 	border-radius: var(--quiz-btn-radius);
@@ -989,6 +992,18 @@ body {
 				width: 3.5rem;
 				padding: 0 0;
 			}
+		}
+	}
+}
+
+
+.question {
+	@apply my-6;
+	.question-title {
+		@apply text-xl;
+
+		.required {
+			@apply text-red-600;
 		}
 	}
 }

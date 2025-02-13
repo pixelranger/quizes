@@ -72,40 +72,45 @@
                   />
                 </template>
                 <template v-if="block.type === 'formInput'">
-                  <div
-                      class="field"
-                      :class="{'error': !answers[block.name] || checkMask(block)}"
-                  >
-                    <label v-if="block.label">
-                      {{ block.label }}
-                      <template v-if="block.required">*</template>
-                    </label>
-                    <input class="input-text"
-                           type="text"
-                           :name="block.id"
-                           :placeholder="block.placeholder"
-                           :value="answers[block.id]"
-                           @input="inputChange(block.id, $event)">
-                    <div v-if="block.example" class="example">
-                      Пример: <i>{{ block.example }}</i>
-                    </div>
-                  </div>
+									<div class="question">
+										<label v-if="block.label" class="question-title">
+											{{ block.label }}
+											<span v-if="block.required" class="required">*</span>
+										</label>
+										<div
+											class="field"
+											:class="{'error': !answers[block.name] || checkMask(block)}"
+										>
+											<input class="input-text"
+												type="text"
+												:name="block.id"
+												:placeholder="block.placeholder"
+												:value="answers[block.id]"
+												@input="inputChange(block.id, $event)"
+											>
+											<div v-if="block.example" class="example">
+												Пример: <i>{{ block.example }}</i>
+											</div>
+										</div>
+									</div>
                 </template>
                 <template v-if="block.type === 'formSelect'">
-                  <div class="field field-select">
-                    <label v-if="block.label">
-                      {{ block.label }}
-                      <template v-if="block.required">*</template>
-                    </label>
-                    <select v-if="block.options"
-                            :name="block.id"
-                            v-model="answers[block.id]"
-                            @change="inputChange(block.id, $event)">
-                      <option v-for="option in block.options" :value="option.id">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </div>
+									<div class="question">
+										<label v-if="block.label" class="question-title">
+											{{ block.label }}
+											<span v-if="block.required" class="required">*</span>
+										</label>
+										<div class="field field-select">
+											<select v-if="block.options"
+															:name="block.id"
+															v-model="answers[block.id]"
+															@change="inputChange(block.id, $event)">
+												<option v-for="option in block.options" :value="option.id">
+													{{ option.label }}
+												</option>
+											</select>
+										</div>
+									</div>
                 </template>
                 <template v-if="block.type === 'formRange'">
                   <div class="field field-range">
@@ -124,10 +129,10 @@
                   </div>
                 </template>
                 <template v-if="block.type === 'formRadio'">
-                  <div>
-                    <label v-if="block.label">
+                  <div class="question">
+                    <label v-if="block.label" class="question-title">
                       {{ block.label }}
-                      <template v-if="block.required">*</template>
+                      <span v-if="block.required" class="required">*</span>
                     </label>
                     <div v-for="option in block.options" class="field field-radio">
                       <div  class="radio-item">
@@ -138,7 +143,7 @@
                                :value="option.id"
                                @change="inputChange(block.id, $event)"
                         >
-                        <label :for="'radio' + currentStep + blockIndex">
+                        <label :for="'radio' + currentStep + blockIndex + option.id">
                           {{ option.label }}
                         </label>
                       </div>
@@ -152,7 +157,7 @@
                                :value="'__$OTHER__'"
                                @change="inputChange(block.id, $event)"
                         >
-                        <label :for="'radio' + currentStep + blockIndex">
+                        <label :for="'radio' + currentStep + blockIndex + '__$OTHER'">
                           Другое
                         </label>
                       </div>
@@ -180,10 +185,10 @@
                 </template>
 
                 <template v-if="block.type === 'formCheckbox'">
-                  <div>
-                    <label v-if="block.label">
+                  <div class="question">
+                    <label v-if="block.label" class="question-title">
                       {{ block.label }}
-                      <template v-if="block.required">*</template>
+                      <span v-if="block.required" class="required">*</span>
                     </label>
                     <div v-for="option in block.options" class="field field-checkbox">
                       <div  class="checkbox-item">
@@ -194,7 +199,7 @@
                                :value="option.id"
                                @change="checkboxChange(block.id, $event)"
                         >
-                        <label :for="'checkbox' + currentStep + blockIndex">
+                        <label :for="'checkbox' + currentStep + blockIndex + block.id + option.id">
                           {{ option.label }}
                         </label>
                       </div>
@@ -208,7 +213,7 @@
                                :value="'__$OTHER__'"
                                @change="checkboxChange(block.id, $event)"
                         >
-                        <label :for="'checkbox' + currentStep + blockIndex">
+                        <label :for="'checkbox' + currentStep + blockIndex + block.id + '__$OTHER'">
                             Другое
                         </label>
                       </div>
