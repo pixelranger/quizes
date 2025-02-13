@@ -1,6 +1,7 @@
 <template>
   <!--Link to compiled style.css-->
   <link rel="stylesheet" href="/quiz_widgets/variant-1/style.css">
+  <link rel="stylesheet" href="/admin_assets/quiz-editor/index.css">
 
   <Main
     :firstname="firstname"
