@@ -1,5 +1,5 @@
 <template>
-  <div class="quiz-container">
+  <div class="quiz-container" :class="'type-' + settings.type">
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -94,7 +94,7 @@
 										</div>
 									</div>
                 </template>
-                <template v-if="block.type === 'formSelect'">
+                <template v-if="['formSelect', 'formSelectRegion'].includes(block.type)">
 									<div class="question">
 										<label v-if="block.label" class="question-title">
 											{{ block.label }}
@@ -495,9 +495,17 @@ for (let key in props) {
     answers.value['email'] = props[key];
   }
   if (key === 'settings') {
-    settings.value = JSON.parse(props[key]);
+    if (typeof window.mfQuizSettings !== 'undefined') {
+      settings.value = JSON.parse(window.mfQuizSettings);
+    } else {
+      settings.value = JSON.parse(props[key]);
+    }
   }
 }
+
+// if (typeof window.mfQuizSettings !== 'undefined') {
+//   settings.value = JSON.parse(window.mfQuizSettings);
+// }
 
 console.log(settings.value)
 if (settings.value.type === 0) {
