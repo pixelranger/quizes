@@ -49,6 +49,11 @@ body {
 
 	/* Это для теста блока шапки */
 	/* top: var(--quiz-top-offset); */
+
+	&.type-0 {
+		height: auto;
+		overflow: unset;
+	}
 }
 
 	
