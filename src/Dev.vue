@@ -791,7 +791,7 @@ const settings = JSON.stringify( {
   showStartImage: true,
   timeString: "Занимает 7 минут",
   "certificate": "https://xn--80apaohbc3aw9e.xn--p1ai/images/certificate-relay-1242x1754.jpg",
-  "post": "https://app-dev.xn--test.xn--p1ai/index_min.php?action=quiz",
+  "post": "https://app-dev.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz",
   sendCertificateUrl: "https://app-dev.xn--test.xn--p1ai/api/send-fin-zosh-certificate",
   monththeme_id: 2,
   attempts: 3000,
