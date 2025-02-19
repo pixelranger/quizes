@@ -753,9 +753,11 @@ function postData() {
     body: JSON.stringify(postObj)
   })
 
-  // scroll up to mf-quiz-main-container
-  const quizContainer = document.getElementById('mf-quiz-main-container');
-  quizContainer.scrollIntoView({behavior: "smooth"});
+  const widget = document.getElementsByTagName('quiz-widget');
+
+  if (widget.length) {
+    widget[0].scrollIntoView({behavior: "smooth"});
+  }
 }
 
 function setStep() {
