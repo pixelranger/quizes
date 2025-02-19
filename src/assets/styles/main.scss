@@ -1012,3 +1012,13 @@ body {
 		}
 	}
 }
+
+.final-message-block {
+	@apply h-full flex flex-col justify-center items-center;
+	
+	.final-message {
+		@apply rounded-xl text-center p-6 text-lg;
+		background-color: var(--quiz-color-primary);
+		color: #fff;		
+	}
+}

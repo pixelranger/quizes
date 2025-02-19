@@ -318,8 +318,8 @@
 
           </template>
 
-          <div v-if="progress === 'final' && settings.type === 0">
-            Спасибо! Ваши данные учтены
+          <div v-if="progress === 'final' && settings.type === 0" class="final-message-block">
+            <div class="final-message">Спасибо! Ваши данные учтены.</div>
           </div>
           <div v-if="progress === 'final' && settings.type === 1" class="top_content">
             <div v-if="answers['name']" class="title">
