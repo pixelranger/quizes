@@ -1,5 +1,5 @@
 <template>
-  <div class="quiz-container" :class="'type-' + settings.type">
+  <div class="quiz-container" :class="{['type-' + settings.type]: !settings.isDevMode}">
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -322,8 +322,11 @@
             Спасибо! Ваши данные учтены
           </div>
           <div v-if="progress === 'final' && settings.type === 1" class="top_content">
-            <div class="title">
+            <div v-if="answers['name']" class="title">
               {{ answers['name'] }}, благодарим за прохождение теста.
+            </div>
+            <div v-else class="title">
+              Благодарим за прохождение теста.
             </div>
             <div class="description" v-if="settings.hideDescriptionOnResult === false">
               <div class="score-message">Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}</div>
@@ -442,9 +445,9 @@
             </button>
             <button v-if="settings.type === 1 && progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
             <div v-if="settings.type === 1" class="info">Нажмите <b>Enter ↵</b></div>
-            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">
-              Вернуться в начало
-            </button>
+<!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
+<!--              Вернуться в начало-->
+<!--            </button>-->
           </div>
         </div>
       </div>
@@ -468,6 +471,12 @@ const props = defineProps({
     type: String
   },
   settings: {
+    type: String
+  },
+  secretId: {
+    type: String
+  },
+  apiUrl: {
     type: String
   },
 });
@@ -494,18 +503,22 @@ for (let key in props) {
   if (key === 'email') {
     answers.value['email'] = props[key];
   }
-  if (key === 'settings') {
-    if (typeof window.mfQuizSettings !== 'undefined') {
-      settings.value = JSON.parse(window.mfQuizSettings);
-    } else {
-      settings.value = JSON.parse(props[key]);
-    }
-  }
 }
 
-// if (typeof window.mfQuizSettings !== 'undefined') {
-//   settings.value = JSON.parse(window.mfQuizSettings);
-// }
+if (props.secretId && props.apiUrl) {
+  await fetch(props.apiUrl + '/' + props.secretId)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      settings.value = fromBackend(data);
+    });
+} else if (props.settings) {
+  if (typeof window.mfQuizSettings !== 'undefined') {
+    settings.value = JSON.parse(window.mfQuizSettings);
+  } else {
+    settings.value = JSON.parse(props.settings);
+  }
+}
 
 console.log(settings.value)
 if (settings.value.type === 0) {
@@ -554,7 +567,34 @@ const refParam = get('ref');
 if (refParam){
   localStorage.setItem('ref-' + settings.value.id, refParam);
 }
-
+function fromBackend(data) {
+  return {
+    id: data.id,
+    secret_id: data.secret_id,
+    title: data.title,
+    type: data.type,
+    description_fail_attempts: data.failed_attemps_text,
+    startScreenTitle: data.start_screen_title,
+    startScreenDescription: data.start_screen_description,
+    startScreenImage: data.start_screen_image,
+    showStartImage: data.show_start_image,
+    timeString: data.time_string,
+    certificate: data.certificate_url,
+    resultDataUrl: data.post_url,
+    sendCertificateUrl: data.send_certificate_url,
+    monththeme_id: data.monththeme_id,
+    maxAttempts: data.max_attempts,
+    generationPDF: data.is_pdf_enabled,
+    ymCount: data.ym_count,
+    ratingLink: data.rating_link,
+    ratingText: data.rating_text,
+    resultPDF: data.required_score_for_pdf,
+    hideDescriptionOnResult: data.hide_description_on_result,
+    hideShareOnResult: data.hide_share_on_result,
+    hideRatingLinkOnResult: data.hide_rating_link_on_result,
+    steps: data.steps,
+  }
+}
 function get(name){
   if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
     return decodeURIComponent(name[1]);
@@ -707,7 +747,7 @@ function postData() {
     'score': score.value,
   };
 
-  fetch(settings.value.post, {
+  fetch(settings.value.resultDataUrl, {
     method: 'POST',
     headers: {'Content-Type': 'application/json;charset=utf-8'},
     body: JSON.stringify(postObj)
@@ -1013,6 +1053,18 @@ window.mfQuizSetStep = function (step) {
   }
   currentStep.value = step;
   progress.value = 'questions';
+  progressCalc();
+}
+
+window.mfQuizSetStartScreen = function () {
+  currentStep.value = 0;
+  progress.value = 'start';
+  progressCalc();
+}
+
+window.mfQuizSetEndScreen = function () {
+  currentStep.value = 0;
+  progress.value = 'final';
   progressCalc();
 }
 
