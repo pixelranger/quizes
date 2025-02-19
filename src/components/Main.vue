@@ -1,5 +1,5 @@
 <template>
-  <div class="quiz-container" :class="{['type-' + settings.type]: !settings.isDevMode}">
+  <div id="mf-quiz-main-container" class="quiz-container" :class="{['type-' + settings.type]: !settings.isDevMode}">
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -752,6 +752,10 @@ function postData() {
     headers: {'Content-Type': 'application/json;charset=utf-8'},
     body: JSON.stringify(postObj)
   })
+
+  // scroll up to mf-quiz-main-container
+  const quizContainer = document.getElementById('mf-quiz-main-container');
+  quizContainer.scrollIntoView({behavior: "smooth"});
 }
 
 function setStep() {
