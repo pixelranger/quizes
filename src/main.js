@@ -17,6 +17,8 @@ customElements.define('quiz-widget', class extends HTMLElement {
       'lastname': this.getAttribute('lastname'),
       'email': this.getAttribute('email'),
       'settings': this.getAttribute('settings'),
+      'apiUrl': this.getAttribute('apiUrl'),
+      'secretId': this.getAttribute('secretId'),
     }
 
     // Bootstrap the Vue.js application within the shadow DOM

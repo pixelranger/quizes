@@ -1,5 +1,5 @@
 <template>
-  <div class="quiz-container">
+  <div id="mf-quiz-main-container" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.type]: !settings.isDevMode}">
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -8,14 +8,7 @@
       </div>
       <div class="quiz-inner-container inner-content" :class="{'animate': animateStep}">
         <div class="parts">
-          <div v-if="stepError" class="error-message">
-            <span class="boundary">
-              <svg viewBox="0 0 24 24" width="24" height="24">
-                <path clip-rule="evenodd" d="M16.336 18H7.003c-1.51 0-2.475-1.609-1.765-2.941l4.667-8.75c.753-1.412 2.776-1.412 3.53 0l4.666 8.75c.71 1.332-.255 2.94-1.765 2.94zM11.67 8.5a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zm0 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"></path>
-              </svg>
-            </span>
-            Вам нужно указать ответ
-          </div>
+
 
           <template v-if="progress === 'start'">
 						<div class="start-container">
@@ -72,40 +65,45 @@
                   />
                 </template>
                 <template v-if="block.type === 'formInput'">
-                  <div
-                      class="field"
-                      :class="{'error': !answers[block.name] || checkMask(block)}"
-                  >
-                    <label v-if="block.label">
-                      {{ block.label }}
-                      <template v-if="block.required">*</template>
-                    </label>
-                    <input class="input-text"
-                           type="text"
-                           :name="block.id"
-                           :placeholder="block.placeholder"
-                           :value="answers[block.id]"
-                           @input="inputChange(block.id, $event)">
-                    <div v-if="block.example" class="example">
-                      Пример: <i>{{ block.example }}</i>
-                    </div>
-                  </div>
+									<div class="question">
+										<label v-if="block.label" class="question-title">
+											{{ block.label }}
+											<span v-if="block.required" class="required">*</span>
+										</label>
+										<div
+											class="field"
+											:class="{'error': !answers[block.name] || checkMask(block)}"
+										>
+											<input class="input-text"
+												type="text"
+												:name="block.id"
+												:placeholder="block.placeholder"
+												:value="answers[block.id]"
+												@input="inputChange(block.id, $event)"
+											>
+											<div v-if="block.example" class="example">
+												Пример: <i>{{ block.example }}</i>
+											</div>
+										</div>
+									</div>
                 </template>
-                <template v-if="block.type === 'formSelect'">
-                  <div class="field field-select">
-                    <label v-if="block.label">
-                      {{ block.label }}
-                      <template v-if="block.required">*</template>
-                    </label>
-                    <select v-if="block.options"
-                            :name="block.id"
-                            v-model="answers[block.id]"
-                            @change="inputChange(block.id, $event)">
-                      <option v-for="option in block.options" :value="option.id">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                  </div>
+                <template v-if="['formSelect', 'formSelectRegion'].includes(block.type)">
+									<div class="question">
+										<label v-if="block.label" class="question-title">
+											{{ block.label }}
+											<span v-if="block.required" class="required">*</span>
+										</label>
+										<div class="field field-select">
+											<select v-if="block.options"
+															:name="block.id"
+															v-model="answers[block.id]"
+															@change="inputChange(block.id, $event)">
+												<option v-for="option in block.options" :value="option.id">
+													{{ option.label }}
+												</option>
+											</select>
+										</div>
+									</div>
                 </template>
                 <template v-if="block.type === 'formRange'">
                   <div class="field field-range">
@@ -124,10 +122,10 @@
                   </div>
                 </template>
                 <template v-if="block.type === 'formRadio'">
-                  <div>
-                    <label v-if="block.label">
+                  <div class="question">
+                    <label v-if="block.label" class="question-title">
                       {{ block.label }}
-                      <template v-if="block.required">*</template>
+                      <span v-if="block.required" class="required">*</span>
                     </label>
                     <div v-for="option in block.options" class="field field-radio">
                       <div  class="radio-item">
@@ -138,7 +136,7 @@
                                :value="option.id"
                                @change="inputChange(block.id, $event)"
                         >
-                        <label :for="'radio' + currentStep + blockIndex">
+                        <label :for="'radio' + currentStep + blockIndex + option.id">
                           {{ option.label }}
                         </label>
                       </div>
@@ -152,7 +150,7 @@
                                :value="'__$OTHER__'"
                                @change="inputChange(block.id, $event)"
                         >
-                        <label :for="'radio' + currentStep + blockIndex">
+                        <label :for="'radio' + currentStep + blockIndex + '__$OTHER'">
                           Другое
                         </label>
                       </div>
@@ -180,10 +178,10 @@
                 </template>
 
                 <template v-if="block.type === 'formCheckbox'">
-                  <div>
-                    <label v-if="block.label">
+                  <div class="question">
+                    <label v-if="block.label" class="question-title">
                       {{ block.label }}
-                      <template v-if="block.required">*</template>
+                      <span v-if="block.required" class="required">*</span>
                     </label>
                     <div v-for="option in block.options" class="field field-checkbox">
                       <div  class="checkbox-item">
@@ -194,7 +192,7 @@
                                :value="option.id"
                                @change="checkboxChange(block.id, $event)"
                         >
-                        <label :for="'checkbox' + currentStep + blockIndex">
+                        <label :for="'checkbox' + currentStep + blockIndex + block.id + option.id">
                           {{ option.label }}
                         </label>
                       </div>
@@ -208,7 +206,7 @@
                                :value="'__$OTHER__'"
                                @change="checkboxChange(block.id, $event)"
                         >
-                        <label :for="'checkbox' + currentStep + blockIndex">
+                        <label :for="'checkbox' + currentStep + blockIndex + block.id + '__$OTHER'">
                             Другое
                         </label>
                       </div>
@@ -313,12 +311,15 @@
 
           </template>
 
-          <div v-if="progress === 'final' && settings.type === 0">
-            Спасибо! Ваши данные учтены
+          <div v-if="progress === 'final' && settings.type === 0" class="final-message-block">
+            <div class="final-message">Спасибо! Ваши данные учтены.</div>
           </div>
           <div v-if="progress === 'final' && settings.type === 1" class="top_content">
-            <div class="title">
+            <div v-if="answers['name']" class="title">
               {{ answers['name'] }}, благодарим за прохождение теста.
+            </div>
+            <div v-else class="title">
+              Благодарим за прохождение теста.
             </div>
             <div class="description" v-if="settings.hideDescriptionOnResult === false">
               <div class="score-message">Ваш результат: {{ score }}/{{ maxScore }} {{ numWord() }}</div>
@@ -377,7 +378,7 @@
                     <div class="rating_link"  v-if="settings.hideRatingLinkOnResult === false">
                       <a class="link" :href="settings.ratingLink" target="_blank" id="rating">{{ settings.ratingText }}</a>
                     </div>
-                    <div>
+                    <div v-if="settings.hideShareOnResult === false">
                       <div class="share_label">Поделиться:</div>
                       <div class="share_list">
                         <button type="button" id="share_vk" class="q-btn m-3 icon-vk text-white text-xl" @click="share('vk')">
@@ -427,6 +428,15 @@
               </div>
             </div>
           </div>
+
+          <div v-if="stepError" class="error-message">
+            <span class="boundary">
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path clip-rule="evenodd" d="M16.336 18H7.003c-1.51 0-2.475-1.609-1.765-2.941l4.667-8.75c.753-1.412 2.776-1.412 3.53 0l4.666 8.75c.71 1.332-.255 2.94-1.765 2.94zM11.67 8.5a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zm0 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"></path>
+              </svg>
+            </span>
+            Вопросы помеченные звёздочкой * обязательны для заполнения
+          </div>
         </div>
 
         <div v-if="!checkAttempts() && (progress !== 'final' || (settings.type === 1 && score < settings.resultPDF))" class="quiz-inner-bottom">
@@ -437,9 +447,9 @@
             </button>
             <button v-if="settings.type === 1 && progress === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
             <div v-if="settings.type === 1" class="info">Нажмите <b>Enter ↵</b></div>
-            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">
-              Вернуться в начало
-            </button>
+<!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
+<!--              Вернуться в начало-->
+<!--            </button>-->
           </div>
         </div>
       </div>
@@ -465,6 +475,12 @@ const props = defineProps({
   settings: {
     type: String
   },
+  secretId: {
+    type: String
+  },
+  apiUrl: {
+    type: String
+  },
 });
 
 let settings = ref({});
@@ -478,7 +494,9 @@ let answers = ref({});
 let score = ref(0);
 let maxScore = ref(0);
 let pdf = ref();
-console.log(props)
+/** костыль, найти решение */
+let refreshKey = ref(0);
+
 for (let key in props) {
   if (key === 'firstname') {
     answers.value['name'] = props[key];
@@ -489,12 +507,23 @@ for (let key in props) {
   if (key === 'email') {
     answers.value['email'] = props[key];
   }
-  if (key === 'settings') {
-    settings.value = JSON.parse(props[key]);
+}
+
+if (props.secretId && props.apiUrl) {
+  await fetch(props.apiUrl + '/' + props.secretId)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      settings.value = fromBackend(data);
+    });
+} else if (props.settings) {
+  if (typeof window.mfQuizSettings !== 'undefined') {
+    settings.value = JSON.parse(window.mfQuizSettings);
+  } else {
+    settings.value = JSON.parse(props.settings);
   }
 }
 
-console.log(settings.value)
 if (settings.value.type === 0) {
   progress.value = 'questions';
 }
@@ -524,22 +553,88 @@ settings.value.steps.forEach(step => {
       answers.value[block.id] = [];
     }
   });
-  if (step.type === 'form') {
-    step.fields.forEach(field => {
-      if (field.type === 'range') {
-        answers.value[field.name] = field.value || field.min;
-      }
-      if (field.type === 'checkbox') {
-        answers.value[field.name] = [];
-      }
-    })
-  }
-
 });
 
+updateAutomaticNumbering();
+// refreshKey.value += 1;
+
 const refParam = get('ref');
+
 if (refParam){
   localStorage.setItem('ref-' + settings.value.id, refParam);
+}
+
+function updateAutomaticNumbering() {
+  if (!settings.value.automaticNumberingType) {
+    return;
+  }
+
+  let stepCount = 1;
+  let continuousBlockCount = 1;
+  settings.value.steps.forEach(step => {
+    if (!step.blocks) {
+      return;
+    }
+
+    let blockCount = 1;
+    step.blocks.forEach(block => {
+      if (!block.type) {
+        console.log('Block type is not defined', block);
+        return;
+      }
+
+      if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion'].includes(block.type)) {
+        if (!checkIfBlockVisible(block)) {
+          return;
+        }
+
+        if (settings.value.automaticNumberingType && settings.value.automaticNumberingType === 'per_page') {
+          if (!block.$__OLD_LABEL) {
+            block.$__OLD_LABEL = block.label;
+          }
+
+          block.label = blockCount + '. ' + block.$__OLD_LABEL;
+        }
+
+
+        blockCount++;
+        continuousBlockCount++;
+      }
+
+    });
+    stepCount++;
+  });
+
+}
+
+function fromBackend(data) {
+  return {
+    id: data.id,
+    secret_id: data.secret_id,
+    automaticNumberingType: data.automatic_numbering_type,
+    title: data.title,
+    type: data.type,
+    description_fail_attempts: data.failed_attemps_text,
+    startScreenTitle: data.start_screen_title,
+    startScreenDescription: data.start_screen_description,
+    startScreenImage: data.start_screen_image,
+    showStartImage: data.show_start_image,
+    timeString: data.time_string,
+    certificate: data.certificate_url,
+    resultDataUrl: data.post_url,
+    sendCertificateUrl: data.send_certificate_url,
+    monththeme_id: data.monththeme_id,
+    maxAttempts: data.max_attempts,
+    generationPDF: data.is_pdf_enabled,
+    ymCount: data.ym_count,
+    ratingLink: data.rating_link,
+    ratingText: data.rating_text,
+    resultPDF: data.required_score_for_pdf,
+    hideDescriptionOnResult: data.hide_description_on_result,
+    hideShareOnResult: data.hide_share_on_result,
+    hideRatingLinkOnResult: data.hide_rating_link_on_result,
+    steps: data.steps,
+  }
 }
 
 function get(name){
@@ -600,37 +695,21 @@ function verifyStep() {
 
   const step = settings.value.steps[currentStep.value];
 
-  if (step.type === 'question' && step.required) {
-    if (settings.value.steps[currentStep.value].multiple) {
-      if (!answers.value[step.title].length) {
-        countError++;
+  step.blocks.forEach(block => {
+    if (!checkIfBlockVisible(block)) {
+      return;
+    }
+
+    if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion'].includes(block.type)) {
+      if (!block.required) {
+        return;
       }
-    } else {
-      if (!answers.value[step.title]) {
+
+      if (!answers.value[block.id]) {
         countError++;
       }
     }
-  }
-
-  if (step.type === 'form' && step.required) {
-    step.fields.forEach(field => {
-      const types = ['input', 'select', 'radio'];
-      if (types.includes(field.type)) {
-        if (!answers.value[field.name]) {
-          countError++;
-        }
-        if (field.mask && checkMask(field)) {
-          countError++;
-        }
-      }
-
-      if (field.type === 'checkbox') {
-        if (!answers.value[field.name].length) {
-          countError++;
-        }
-      }
-    });
-  }
+  });
 
   stepError.value = countError > 0;
   return countError === 0;
@@ -694,11 +773,17 @@ function postData() {
     'score': score.value,
   };
 
-  fetch(settings.value.post, {
+  fetch(settings.value.resultDataUrl, {
     method: 'POST',
     headers: {'Content-Type': 'application/json;charset=utf-8'},
     body: JSON.stringify(postObj)
   })
+
+  const widget = document.getElementsByTagName('quiz-widget');
+
+  if (widget.length) {
+    widget[0].scrollIntoView();
+  }
 }
 
 function setStep() {
@@ -966,6 +1051,10 @@ function checkIfBlockVisible(block) {
   return evaluateConditions(block.conditions.list, context);
 }
 
+watch(answers, (newVal, oldVal) => {
+  updateAutomaticNumbering();
+}, {deep: true})
+
 watch([currentStep, progress], (newVal, prevVal) => {
   if (newVal !== prevVal) {
     animateStep.value = true;
@@ -1003,8 +1092,21 @@ window.mfQuizSetStep = function (step) {
   progressCalc();
 }
 
+window.mfQuizSetStartScreen = function () {
+  currentStep.value = 0;
+  progress.value = 'start';
+  progressCalc();
+}
+
+window.mfQuizSetEndScreen = function () {
+  currentStep.value = 0;
+  progress.value = 'final';
+  progressCalc();
+}
+
 window.mfQuizRegisterNewSettings = function (newSettings) {
   settings.value = JSON.parse(JSON.stringify(newSettings));
+  updateAutomaticNumbering();
   // currentStep.value = 0;
   // progress.value = 'start';
   // answers.value = {};

@@ -29,6 +29,7 @@
 body {
 	margin: 0;
 	padding: 0;
+	font-family: inherit;
 }
 
 	
@@ -48,6 +49,11 @@ body {
 
 	/* Это для теста блока шапки */
 	/* top: var(--quiz-top-offset); */
+
+	&.type-0 {
+		height: auto;
+		overflow: unset;
+	}
 }
 
 	
@@ -719,6 +725,8 @@ body {
 
 
 .quiz-content .field-select select {
+	@apply min-w-80;
+
 	border: 1px solid;
 	border-color: #d1d5db;
 	border-radius: var(--quiz-btn-radius);
@@ -990,5 +998,27 @@ body {
 				padding: 0 0;
 			}
 		}
+	}
+}
+
+
+.question {
+	@apply my-6;
+	.question-title {
+		@apply text-xl;
+
+		.required {
+			@apply text-red-600;
+		}
+	}
+}
+
+.final-message-block {
+	@apply h-full flex flex-col justify-center items-center;
+	
+	.final-message {
+		@apply rounded-xl text-center p-6 text-lg;
+		background-color: var(--quiz-color-primary);
+		color: #fff;		
 	}
 }
