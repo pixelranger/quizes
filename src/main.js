@@ -18,6 +18,7 @@ customElements.define('quiz-widget', class extends HTMLElement {
       'email': this.getAttribute('email'),
       'settings': this.getAttribute('settings'),
       'apiUrl': this.getAttribute('apiUrl'),
+      'cardsApiUrl': this.getAttribute('cardsApiUrl'),
       'secretId': this.getAttribute('secretId'),
     }
 
