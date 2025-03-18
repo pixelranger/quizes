@@ -13,6 +13,7 @@
       :settings="settings"
       :secret-id="secretId"
       :api-url="apiUrl"
+      :cards-api-url="cardsApiUrl"
     />
   </suspense>
 </template>
@@ -38,6 +39,9 @@ defineProps({
     type: String
   },
   apiUrl: {
+    type: String
+  },
+  cardsApiUrl: {
     type: String
   },
 });

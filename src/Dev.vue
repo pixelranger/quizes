@@ -6,6 +6,9 @@
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
         :settings="settings2"
+        secretId="75dcd174-283b-44a8-8847-b54cff508835"
+        apiUrl="https://mfbr.test/api/quizzes/quizzes"
+        cardsApiUrl="https://mfbr.test/api/quizzes/cards"
     />
   </suspense>
 
