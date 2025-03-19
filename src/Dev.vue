@@ -1,7 +1,7 @@
 <template>
   <suspense>
 
-    <Main
+    <!-- <Main
         :firstname="'Иван'"
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
@@ -9,6 +9,26 @@
         secretId="75dcd174-283b-44a8-8847-b54cff508835"
         apiUrl="https://mfbr.test/api/quizzes/quizzes"
         cardsApiUrl="https://mfbr.test/api/quizzes/cards"
+    /> -->
+
+		<!-- Тестовый на 2 вопроса -->
+    <!-- <Main
+        :firstname="'Иван'"
+        :lastname="'Петров'"
+        :email="'ivan@gmail.com'"
+        :settings="settings2"
+        secretId="6ef7e048-2e95-4011-a431-28ec3c86b968"
+        apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
+        cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
+    /> -->
+    <Main
+        :firstname="'Иван'"
+        :lastname="'Петров'"
+        :email="'ivan@gmail.com'"
+        :settings="settings2"
+        secretId="6ef7e048-2e95-4011-a431-28ec3c86b968"
+        apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
+        cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
     />
   </suspense>
 
