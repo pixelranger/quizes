@@ -590,8 +590,8 @@ body {
 
 .quiz-content .option .animate .key {
 	background: rgba(var(--quiz-color-primary-rgb), 0.3);
-	animation: key 0.2s linear;
-	animation-iteration-count: 5;
+	// animation: key 0.2s linear;
+	// animation-iteration-count: 5;
 }
 
 .quiz-content .option .animate svg {
