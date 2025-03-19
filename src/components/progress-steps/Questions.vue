@@ -381,7 +381,7 @@ function shuffle(array, blockId) {
                     :checked="answers[block.id] === option.id"
                 >
                 <div
-                    v-if="checkAnswerText(block, option.id)"
+                    v-if="checkAnswerText(block, option.id) && option.selectedText"
                     class="selected-answer-text"
                     v-html="option.selectedText"
                 />
