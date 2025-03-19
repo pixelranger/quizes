@@ -604,7 +604,7 @@ body {
 .quiz-content.answers-show-mode {
 	.option {
 		label {
-			
+			pointer-events: none;
 			svg {
 				position: relative;
 				top: auto;
@@ -630,12 +630,18 @@ body {
 				}
 			}
 			&.incorrect {
-				@apply bg-red-500 bg-opacity-40 border border-solid border-red-500 shadow-none;
-				@apply text-red-600;
 				.key {
-					@apply text-red-600 border-red-600;
-				}				
+					background-color: rgba(var(--quiz-color-primary-rgb), 0.1);
+				}
+				&.selected {
+					@apply bg-red-500 bg-opacity-40 border border-solid border-red-500 shadow-none;
+					@apply text-red-600;
+					.key {
+						@apply bg-white text-red-600 border-red-600;
+					}				
+				}
 			}
+			
 		}
 	} 
 }
