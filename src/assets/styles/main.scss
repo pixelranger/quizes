@@ -1088,6 +1088,8 @@ body {
 		}		
 
 		img {
+			@apply rounded-lg;
+			border: 1px solid #dedede;
 			max-width: 100%;
 			height: auto !important;
 		}
