@@ -17,6 +17,16 @@
 
 	--quiz-btn-radius: .375rem;
 	--quiz-top-offset: 4.25rem;
+
+	--quiz-start-title-size: 1.75rem;
+	--quiz-start-description-size: 1.25rem;
+
+	--quiz-question-title-size: 1.75rem;
+	--quiz-question-description-size: 1.25rem;
+	--quiz-question-explanation-size: 1rem;
+
+	--quiz-score-description-size: 1.15rem;	
+	--quiz-score-description-color: #909093;
 }
 
 #app {
@@ -902,6 +912,10 @@ body {
 			}			
 		}
 
+		.score-description {
+			color: var(--quiz-score-description-color);
+			font-size: var(--quiz-score-description-size);
+		}
 	}
 
 
@@ -974,8 +988,13 @@ body {
 
 
 .quiz-content .inner-content .start-container .title {
+	font-size: var(--quiz-start-title-size);
 	text-align: center;
 }
+.quiz-content .inner-content .start-container .description {
+	font-size: var(--quiz-start-description-size);
+}
+
 .quiz-content .inner-content .start-container .image {
 	text-align: center;
 }
@@ -988,26 +1007,26 @@ body {
 		max-height: unset;
 	}
 
-	.start-container {
+	.start-container.grid_image {
 		display: grid;
 		grid-template-columns: repeat(12, minmax(0, 1fr));
 		grid-template-rows: auto 1fr;
 		column-gap: 2rem;
 	}
 
-	.start-container .title {
+	.start-container.grid_image .title {
 		grid-column: span 7 / span 7;
 		grid-column-start: 1;
 		grid-row-start: 1;
 	}
 	
-	.start-container .description {
+	.start-container.grid_image .description {
 		grid-column: span 7 / span 7;
 		grid-column-start: 1;
 		grid-row-start: 2;
 	}
 	
-	.start-container .image {
+	.start-container.grid_image .image {
 		grid-column: span 5 / span 5;
 		grid-column-start: 8;
 		grid-row: span 2 / span 2;

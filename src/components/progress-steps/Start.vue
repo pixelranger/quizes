@@ -17,11 +17,13 @@ function checkAttempts() {
 </script>
 
 <template>
-  <div class="start-container">
+  <div 
+		class="start-container"
+		:class = "[settings.showStartImage && settings.startScreenImage ? 'grid_image' : '']"
+	>
     <div class="title" v-html="settings.startScreenTitle"></div>
-    <div class="image">
-      <img v-if="settings.showStartImage && settings.startScreenImage"
-           :src="settings.startScreenImage" class="start-image" alt="">
+    <div v-if="settings.showStartImage && settings.startScreenImage" class="image">
+      <img :src="settings.startScreenImage" class="start-image" alt="">
     </div>
 
     <div class="description">
@@ -40,6 +42,9 @@ function checkAttempts() {
       </div>
     </div>
   </div>
+
+
+
   <div v-if="checkAttempts() && !settings.description_fail_attempts" class="quiz-error">
     Вы исчерпали {{ settings.attempts }} попытки. Прохождение теста недоступно.
   </div>
