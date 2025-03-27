@@ -21,12 +21,21 @@
         apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
         cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
     /> -->
-    <Main
+    <!-- <Main
         :firstname="'Иван'"
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
         :settings="settings2"
         secretId="6ef7e048-2e95-4011-a431-28ec3c86b968"
+        apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
+        cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
+    /> -->
+    <Main
+        :firstname="'Иван'"
+        :lastname="'Петров'"
+        :email="'ivan@gmail.com'"
+        :settings="settings2"
+        secretId="435ad007-45f7-4f62-b71d-cd5e3ce640c2"
         apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
         cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
     />

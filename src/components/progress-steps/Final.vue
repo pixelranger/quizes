@@ -162,11 +162,14 @@ function stripHtmlTags(str) {
     <div v-else class="title">
       Благодарим за прохождение теста.
     </div>
-    <div class="description" v-if="settings.hideDescriptionOnResult === false">
+    <div v-if="settings.hideDescriptionOnResult === false">
       <div class="score-message">Ваш результат: {{ progressStore.currentScore }}/{{ progressStore.maxScore }} {{ numWord(progressStore.currentScore, ['балл', 'балла', 'баллов']) }}</div>
       <template v-for="el in settings.result">
-        <div v-if="progressStore.currentScore >= el.from && progressStore.currentScore <= el.to" v-html="el.text">
-        </div>
+        <div 
+					v-if="progressStore.currentScore >= el.from && progressStore.currentScore <= el.to" 
+					class="score-description"
+					v-html="el.text"
+				></div>
       </template>
     </div>
     <a v-if="answersStore.getWrongAnswers(settings).length > 0" @click.prevent="progressStore.stage = 'wrongAnswers'" class="wrong-answers link">
