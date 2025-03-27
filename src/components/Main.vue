@@ -1,5 +1,5 @@
 <template>
-  <div id="mf-quiz-main-container" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.type]: !settings.isDevMode}">
+  <div id="mf-quiz-main-container" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.containerType]: !settings.isDevMode}">
 
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
@@ -253,6 +253,7 @@ function fromBackend(data) {
     id: data.id,
     secret_id: data.secret_id,
     automaticNumberingType: data.automatic_numbering_type,
+    containerType: data.container_type,
     title: data.title,
     type: data.type,
     description_fail_attempts: data.failed_attemps_text,
@@ -533,7 +534,7 @@ window.mfQuizSetEndScreen = function () {
 }
 
 window.mfQuizRegisterNewSettings = function (newSettings) {
-  settings.value = JSON.parse(JSON.stringify(newSettings));
+  settingsStore.setSettings(JSON.parse(JSON.stringify(newSettings)));
   answers = {};
   updateAutomaticNumbering();
 }
