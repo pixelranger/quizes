@@ -161,7 +161,7 @@ function shuffle(array, blockId) {
             v-html="block.description"
         />
       </template>
-      <template v-if="block.type === 'formInput'">
+      <template v-if="['formInput', 'formInputFirstName', 'formInputLastName', 'formInputEmail', 'formInputMiddleName'].includes(block.type)">
         <div class="question">
           <label v-if="block.label" class="question-title">
             {{ block.label }}

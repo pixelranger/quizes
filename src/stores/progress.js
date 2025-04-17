@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAnswersStore } from '@/stores/answers';
 import { useSettingsStore } from '@/stores/settings';
+import isNumeric from '@/utils/isNumeric';
 
 
 export const useProgressStore = defineStore('progress', {
@@ -29,30 +30,57 @@ export const useProgressStore = defineStore('progress', {
 
                                 if (allCorrectAnswers) {
                                     score += settings.rightAnswerScoreWeight;
+                                } else if (answers[block.id].length > 0) {
+                                    score += settings.wrongAnswerScoreWeight;
                                 }
                             } else {
                                 if (answers[block.id]) {
                                     const correctAnswer = block.options.find(option => option.is_correct_answer);
                                     if (correctAnswer.id === answers[block.id]) {
                                         score += settings.rightAnswerScoreWeight;
+                                    } else if (answers[block.id]) {
+                                        score += settings.wrongAnswerScoreWeight;
                                     }
                                 }
                             }
                         } else if (settings.scoreCalculationMethod === 'by_answer') {
                             if (block.multiple) {
-                                let correctAnswers = block.options.filter(option => option.is_correct_answer);
+                                let options = block.options;
 
-                                correctAnswers.forEach(option => {
-                                    if (answers[block.id] && answers[block.id].includes(option.id)) {
-                                        score += settings.rightAnswerScoreWeight;
+                                options.forEach(option => {
+                                    let weight = 0;
+
+                                    if (isNumeric(option.custom_score_weight)) {
+                                        weight = option.custom_score_weight;
+                                    } else if (option.is_correct_answer) {
+                                        weight = settings.rightAnswerScoreWeight;
+                                    } else {
+                                        weight = settings.wrongAnswerScoreWeight;
                                     }
-                                });
+
+                                    if (answers[block.id] && answers[block.id].includes(option.id)) {
+                                        score += parseInt(weight);
+                                    }
+
+                                })
                             } else {
                                 if (answers[block.id]) {
-                                    const correctAnswer = block.options.find(option => option.is_correct_answer);
-                                    if (correctAnswer.id === answers[block.id]) {
-                                        score += settings.rightAnswerScoreWeight;
-                                    }
+                                    block.options.forEach(option => {
+                                        let weight = 0;
+
+                                        if (isNumeric(option.custom_score_weight)) {
+                                            weight = option.custom_score_weight;
+                                        } else if (option.is_correct_answer) {
+                                            weight = settings.rightAnswerScoreWeight;
+                                        } else {
+                                            weight = settings.wrongAnswerScoreWeight;
+                                        }
+
+                                        if (answers[block.id] && answers[block.id] === option.id) {
+                                            score += parseInt(weight);
+                                        }
+                                    })
+
                                 }
                             }
                         }
@@ -75,9 +103,17 @@ export const useProgressStore = defineStore('progress', {
                             maxScore += settings.rightAnswerScoreWeight;
                         } else if (settings.scoreCalculationMethod === 'by_answer') {
                             maxScore += block.options.reduce((acc, option) => {
-                                return option.is_correct_answer ?
-                                    acc + settings.rightAnswerScoreWeight :
-                                    acc;
+                                let weight = 0;
+
+                                if (typeof option.custom_score_weight !== 'undefined' && isNumeric(option.custom_score_weight)) {
+                                    weight = option.custom_score_weight;
+                                } else if (option.is_correct_answer) {
+                                    weight = settings.rightAnswerScoreWeight;
+                                } else if (block.multiple) {
+                                    weight = settings.wrongAnswerScoreWeight;
+                                }
+
+                                return acc + parseInt(weight);
                             }, 0);
                         }
                     }

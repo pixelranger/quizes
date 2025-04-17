@@ -152,10 +152,10 @@ function stripHtmlTags(str) {
 </script>
 
 <template>
-  <div v-if="settings.type === 0" class="final-message-block">
+  <div v-if="settings.type === 0 || settings.disableLastScreen" class="final-message-block">
     <div class="final-message">Спасибо! Ваши данные учтены.</div>
   </div>
-  <div v-if="settings.type === 1" class="top_content">
+  <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="top_content">
     <div v-if="answers['name']" class="title">
       {{ answers['name'] }}, благодарим за прохождение теста.
     </div>
@@ -165,8 +165,8 @@ function stripHtmlTags(str) {
     <div v-if="settings.hideDescriptionOnResult === false">
       <div class="score-message">Ваш результат: {{ progressStore.currentScore }}/{{ progressStore.maxScore }} {{ numWord(progressStore.currentScore, ['балл', 'балла', 'баллов']) }}</div>
       <template v-for="el in settings.result">
-        <div 
-					v-if="progressStore.currentScore >= el.from && progressStore.currentScore <= el.to" 
+        <div
+					v-if="progressStore.currentScore >= el.from && progressStore.currentScore <= el.to"
 					class="score-description"
 					v-html="el.text"
 				></div>
@@ -177,7 +177,7 @@ function stripHtmlTags(str) {
     </a>
   </div>
 
-  <div v-if="settings.type === 1" class="result-grid" id="result-pdf">
+  <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="result-grid" id="result-pdf">
     <div class="result-grid-left md:col-span-6 xl:col-span-5">
       <div class="form text-left">
         <form action="">

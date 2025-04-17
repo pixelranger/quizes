@@ -1,6 +1,5 @@
 <template>
   <div id="mf-quiz-main-container" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.containerType]: !settings.isDevMode}">
-
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -29,7 +28,6 @@
           </template>
 
 
-
           <template v-if="stage === 'wrongAnswers'">
             <wrong-answers
                 :settings="settings"
@@ -40,31 +38,40 @@
           <div v-if="stepError" class="error-message">
             <span class="boundary">
               <svg viewBox="0 0 24 24" width="24" height="24">
-                <path clip-rule="evenodd" d="M16.336 18H7.003c-1.51 0-2.475-1.609-1.765-2.941l4.667-8.75c.753-1.412 2.776-1.412 3.53 0l4.666 8.75c.71 1.332-.255 2.94-1.765 2.94zM11.67 8.5a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zm0 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"></path>
+                <path clip-rule="evenodd"
+                      d="M16.336 18H7.003c-1.51 0-2.475-1.609-1.765-2.941l4.667-8.75c.753-1.412 2.776-1.412 3.53 0l4.666 8.75c.71 1.332-.255 2.94-1.765 2.94zM11.67 8.5a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zm0 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
+                      fill-rule="evenodd"></path>
               </svg>
             </span>
             Вопросы помеченные звёздочкой * обязательны для заполнения
           </div>
         </div>
 
-        <div v-if="!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF))" class="quiz-inner-bottom">
+        <div
+            v-if="!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF))"
+            class="quiz-inner-bottom">
           <div class="button-container">
             <button v-if="stage === 'start'" class="q-btn next" @click="setStartStage()">Начать</button>
             <button v-if="stage === 'questions'" class="q-btn next" @click="nextClick()">
               {{ settings.steps[currentStep].button || 'OK' }}
             </button>
-            <button v-if="stage === 'wrongAnswers' && answersStore.getWrongAnswers(settings).length - 1 > answersStore.wrongAnswerScreenIndex" class="q-btn next" @click="answersStore.wrongAnswerScreenIndex++">
+            <button
+                v-if="stage === 'wrongAnswers' && answersStore.getWrongAnswers(settings).length - 1 > answersStore.wrongAnswerScreenIndex"
+                class="q-btn next" @click="answersStore.wrongAnswerScreenIndex++">
               Далее
             </button>
-            <button v-if="stage === 'wrongAnswers'" class="q-btn next" @click="progressStore.stage = 'final', answersStore.wrongAnswerScreenIndex = 0">
+            <button v-if="stage === 'wrongAnswers'" class="q-btn next"
+                    @click="progressStore.stage = 'final', answersStore.wrongAnswerScreenIndex = 0">
               Вернуться к результатам
             </button>
 
-            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
+            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить
+              квиз
+            </button>
             <div v-if="settings.type === 1" class="info">Нажмите <b>Enter ↵</b></div>
-<!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
-<!--              Вернуться в начало-->
-<!--            </button>-->
+            <!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
+            <!--              Вернуться в начало-->
+            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -74,7 +81,7 @@
 
 <script setup>
 import { ref, defineProps, watch, computed } from 'vue';
-import html2pdf from "html2pdf.js/dist/html2pdf.bundle"
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle';
 import Final from '@/components/progress-steps/Final.vue';
 import Start from '@/components/progress-steps/Start.vue';
 import Questions from '@/components/progress-steps/Questions.vue';
@@ -91,25 +98,25 @@ const cardsStore = useCardsStore();
 
 const props = defineProps({
   firstname: {
-    type: String
+    type: String,
   },
   lastname: {
-    type: String
+    type: String,
   },
   email: {
-    type: String
+    type: String,
   },
   settings: {
-    type: String
+    type: String,
   },
   secretId: {
-    type: String
+    type: String,
   },
   apiUrl: {
-    type: String
+    type: String,
   },
   cardsApiUrl: {
-    type: String
+    type: String,
   },
 });
 
@@ -126,22 +133,8 @@ let refreshKey = ref(0);
 await initialSetup();
 
 async function initialSetup() {
-  for (let key in props) {
-    if (key === 'firstname') {
-      answers['name'] = props[key];
-    }
-    if (key === 'lastname') {
-      answers['last_name'] = props[key];
-    }
-    if (key === 'email') {
-      answers['email'] = props[key];
-    }
-  }
-
   if (props.secretId && props.apiUrl) {
-    await fetch(props.apiUrl + '/' + props.secretId)
-    .then(response => response.json())
-    .then(data => {
+    await fetch(props.apiUrl + '/' + props.secretId).then(response => response.json()).then(data => {
       settingsStore.settings = fromBackend(data);
     });
   } else if (props.settings) {
@@ -152,7 +145,8 @@ async function initialSetup() {
     }
   }
 
-  if (settings.value.type === 0) {
+  console.log(settings.value)
+  if (settings.value.type === 0 || settings.value.disableFirstScreen) {
     progressStore.stage = 'questions';
   }
 
@@ -188,6 +182,36 @@ async function initialSetup() {
     });
   });
 
+  for (let key in props) {
+    if (key === 'firstname') {
+      const firstNameField = settingsStore.getFirstFieldByType('formInputFirstName');
+
+      if (!firstNameField) {
+        continue;
+      }
+
+      answers[firstNameField.id] = props[key];
+    }
+    if (key === 'lastname') {
+      const lastNameField = settingsStore.getFirstFieldByType('formInputLastName');
+
+      if (!lastNameField) {
+        continue;
+      }
+
+      answers[lastNameField.id] = props[key];
+    }
+    if (key === 'email') {
+      const emailField = settingsStore.getFirstFieldByType('formInputEmail');
+
+      if (!emailField) {
+        continue;
+      }
+
+      answers[emailField.id] = props[key];
+    }
+  }
+
   if (cardIds && cardIds.length) {
     cardsStore.fetchCards(props.cardsApiUrl, cardIds);
   }
@@ -197,7 +221,7 @@ async function initialSetup() {
 
   const refParam = get('ref');
 
-  if (refParam){
+  if (refParam) {
     localStorage.setItem('ref-' + settings.value.id, refParam);
   }
 
@@ -223,7 +247,18 @@ function updateAutomaticNumbering() {
         return;
       }
 
-      if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion', 'question'].includes(block.type)) {
+      if ([
+        'formRange',
+        'formInput',
+        'formInputFirstName',
+        'formInputLastName',
+        'formInputEmail',
+        'formCheckbox',
+        'formRadio',
+        'formSelect',
+        'formSelectRegion',
+        'question',
+      ].includes(block.type)) {
         if (!checkIfBlockVisible(block)) {
           return;
         }
@@ -279,12 +314,14 @@ function fromBackend(data) {
     scoreCalculationMethod: data.score_calculation_method,
     rightAnswerScoreWeight: data.right_answer_score_weight,
     wrongAnswerScoreWeight: data.wrong_answer_score_weight,
+    disableFirstScreen: data.disable_first_screen,
+    disableLastScreen: data.disable_last_screen,
     result: data.result,
   };
 }
 
-function get(name){
-  if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+function get(name) {
+  if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
     return decodeURIComponent(name[1]);
 }
 
@@ -307,7 +344,8 @@ function verifyStep() {
       return;
     }
 
-    if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion'].includes(block.type)) {
+    if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion'].includes(
+        block.type)) {
       if (!block.required) {
         return;
       }
@@ -322,7 +360,6 @@ function verifyStep() {
 
   return countError === 0;
 }
-
 
 function postData() {
   let position;
@@ -351,9 +388,9 @@ function postData() {
 
   fetch(settings.value.resultDataUrl, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json;charset=utf-8'},
-    body: JSON.stringify(postObj)
-  })
+    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    body: JSON.stringify(postObj),
+  });
 
   const widget = document.getElementsByTagName('quiz-widget');
 
@@ -365,7 +402,7 @@ function postData() {
 function setStep() {
   let url = new URL(window.location);
   url.searchParams.set('step', currentStep.value.toString());
-  history.pushState({}, "", url);
+  history.pushState({}, '', url);
 
   if (!url.pathname.startsWith('/virtual')) {
 
@@ -373,7 +410,7 @@ function setStep() {
     url.pathname = newPathname;
   }
 
-  if (typeof(ym) === 'function') {
+  if (typeof (ym) === 'function') {
     ym(settings.value.ymCount, 'hit', url.href);
   }
 }
@@ -411,7 +448,6 @@ function reloadQuiz() {
 function clearAnswers() {
   answersStore.answers = {};
 }
-
 
 function checkIfBlockVisible(block) {
   if (!block.conditions) {
@@ -456,9 +492,9 @@ function checkIfBlockVisible(block) {
     context[condition.field + 'FILTER'] = condition.value;
     let fieldValue = answers[condition.field] || '';
     if (condition.operator === 'equal') {
-      conditionString += '"' + condition.field + '"' + '="' + condition.field + 'FILTER"' ;
+      conditionString += '"' + condition.field + '"' + '="' + condition.field + 'FILTER"';
     } else if (condition.operator === 'notEqual') {
-      conditionString += 'NOT' + '"' + condition.field + '"' + '="' + condition.field + 'FILTER"' ;
+      conditionString += 'NOT' + '"' + condition.field + '"' + '="' + condition.field + 'FILTER"';
     }
     // console.log(answers[condition.field])
     // conditionString += answers[condition.field] + ' ' + (condition.operator === 'equal' ? '=' : ) + ' ' + condition.value;
@@ -466,7 +502,7 @@ function checkIfBlockVisible(block) {
       if (block.conditions.list[index + 1] && block.conditions.list[index + 1].toPreviousFieldOperator) {
         conditionString += ' ' + block.conditions.list[index + 1].toPreviousFieldOperator.toUpperCase() + ' ';
       } else {
-        conditionString += ' '
+        conditionString += ' ';
       }
       // if (condition.toPreviousFieldOperator) {
       //   conditionString += ' ' + condition.toPreviousFieldOperator.toUpperCase() + ' ';
@@ -482,7 +518,7 @@ function checkIfBlockVisible(block) {
 
 watch(answers, (newVal, oldVal) => {
   updateAutomaticNumbering();
-}, {deep: true})
+}, { deep: true });
 
 watch([currentStep, () => progressStore.stage], (newVal, prevVal) => {
   if (newVal !== prevVal) {
@@ -512,31 +548,31 @@ document.addEventListener('keydown', e => {
   }
 });
 
-window.mfQuizSetStep = function (step) {
+window.mfQuizSetStep = function(step) {
   if (typeof settings.value.steps[step] === 'undefined') {
     return;
   }
   currentStep.value = step;
   progressStore.stage = 'questions';
   progressCalc();
-}
+};
 
-window.mfQuizSetStartScreen = function () {
+window.mfQuizSetStartScreen = function() {
   currentStep.value = 0;
   progressStore.stage = 'start';
   progressCalc();
-}
+};
 
-window.mfQuizSetEndScreen = function () {
+window.mfQuizSetEndScreen = function() {
   currentStep.value = 0;
   progressStore.stage = 'final';
   progressCalc();
-}
+};
 
-window.mfQuizRegisterNewSettings = function (newSettings) {
+window.mfQuizRegisterNewSettings = function(newSettings) {
   settingsStore.setSettings(JSON.parse(JSON.stringify(newSettings)));
   answers = {};
   updateAutomaticNumbering();
-}
+};
 
 </script>
