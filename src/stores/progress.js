@@ -30,7 +30,7 @@ export const useProgressStore = defineStore('progress', {
 
                                 if (allCorrectAnswers) {
                                     score += settings.rightAnswerScoreWeight;
-                                } else if (answers[block.id].length > 0) {
+                                } else if (typeof answers[block.id] !== 'undefined' && answers[block.id].length > 0) {
                                     score += settings.wrongAnswerScoreWeight;
                                 }
                             } else {
@@ -102,19 +102,43 @@ export const useProgressStore = defineStore('progress', {
                         if (settings.scoreCalculationMethod === 'by_question') {
                             maxScore += settings.rightAnswerScoreWeight;
                         } else if (settings.scoreCalculationMethod === 'by_answer') {
-                            maxScore += block.options.reduce((acc, option) => {
-                                let weight = 0;
+                            if (block.multiple) {
+                                block.options.forEach(option => {
+                                    let weight = 0;
 
-                                if (typeof option.custom_score_weight !== 'undefined' && isNumeric(option.custom_score_weight)) {
-                                    weight = option.custom_score_weight;
-                                } else if (option.is_correct_answer) {
-                                    weight = settings.rightAnswerScoreWeight;
-                                } else if (block.multiple) {
-                                    weight = settings.wrongAnswerScoreWeight;
-                                }
+                                    if (isNumeric(option.custom_score_weight)) {
+                                        weight = option.custom_score_weight;
+                                    } else if (option.is_correct_answer) {
+                                        weight = settings.rightAnswerScoreWeight;
+                                    } else {
+                                        weight = settings.wrongAnswerScoreWeight;
+                                    }
 
-                                return acc + parseInt(weight);
-                            }, 0);
+                                    maxScore += parseInt(weight);
+                                });
+                            } else {
+                                // find option with highest weight
+                                let maxWeight = 0;
+                                block.options.forEach(option => {
+                                    let weight = 0;
+
+                                    if (isNumeric(option.custom_score_weight)) {
+                                        weight = option.custom_score_weight;
+                                    } else if (option.is_correct_answer) {
+                                        weight = settings.rightAnswerScoreWeight;
+                                    } else {
+                                        weight = settings.wrongAnswerScoreWeight;
+                                    }
+
+                                    if (weight > maxWeight) {
+                                        maxWeight = weight;
+                                    }
+                                });
+
+                                console.log(maxWeight)
+                                maxScore += parseInt(maxWeight);
+                            }
+
                         }
                     }
                 });

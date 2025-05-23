@@ -337,7 +337,10 @@ function shuffle(array, blockId) {
               :class="block.image ? 'image-grid' : ''"
           >
             <div class="text-part">
-              <div class="title">{{ block.label }}</div>
+              <label class="title">
+                {{ block.label || block.title }}
+                <span v-if="block.required" class="required">*</span>
+              </label>
               <div class="">{{ block.multiple ? 'Выберите один или несколько вариантов ответа' : 'Выберите один вариант ответа' }}</div>
               <div
                   v-if="block.description"
@@ -366,7 +369,7 @@ function shuffle(array, blockId) {
                   <div class="option-container">
                     <img v-if="option.image" :src="option.image" class="option-image" alt="">
                     <span class="key">{{ alphabet[optionIndex] }}</span>
-                    <div>{{ option.title }}</div>
+                    <div>{{ option.title }} {{ (settings.isDevMode && option.is_correct_answer) ? '(Правильный ответ)' : '' }}</div>
                   </div>
                   <svg height="13" width="16">
                     <path d="M14.293.293l1.414 1.414L5 12.414.293 7.707l1.414-1.414L5 9.586z"></path>

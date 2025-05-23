@@ -16,6 +16,7 @@
 
           <template v-if="stage === 'questions'">
             <questions
+                :key="currentStep"
                 :check-if-block-visible="checkIfBlockVisible"
                 :verify-step="verifyStep"
                 :current-step="currentStep"
@@ -49,11 +50,12 @@
 
         <div
             v-if="!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF))"
-            class="quiz-inner-bottom">
+            class="quiz-inner-bottom"
+        >
           <div class="button-container">
             <button v-if="stage === 'start'" class="q-btn next" @click="setStartStage()">Начать</button>
             <button v-if="stage === 'questions'" class="q-btn next" @click="nextClick()">
-              {{ settings.steps[currentStep].button || 'OK' }}
+              {{ settings.steps[currentStep]?.bottomButton?.text || 'OK' }}
             </button>
             <button
                 v-if="stage === 'wrongAnswers' && answersStore.getWrongAnswers(settings).length - 1 > answersStore.wrongAnswerScreenIndex"
@@ -65,10 +67,10 @@
               Вернуться к результатам
             </button>
 
-            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить
-              квиз
+            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">
+              {{ settings?.endScreen?.bottomButton.text || 'Повторить квиз' }}
             </button>
-            <div v-if="settings.type === 1" class="info">Нажмите <b>Enter ↵</b></div>
+            <div v-if="settings.type === 1 && stage !== 'final'" class="info">Нажмите <b>Enter ↵</b></div>
             <!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
             <!--              Вернуться в начало-->
             <!--            </button>-->
@@ -90,6 +92,7 @@ import WrongAnswers from '@/components/progress-steps/WrongAnswers.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useProgressStore } from '@/stores/progress';
 import { useCardsStore } from '@/stores/cards';
+import { v4 } from 'uuid';
 
 const answersStore = useAnswersStore();
 const settingsStore = useSettingsStore();
@@ -145,10 +148,12 @@ async function initialSetup() {
     }
   }
 
-  console.log(settings.value)
   if (settings.value.type === 0 || settings.value.disableFirstScreen) {
     progressStore.stage = 'questions';
   }
+
+  answersStore.submissionSecretId = generateRandom64CharacterString();
+  progressStore.userQuizId = v4();
 
   let cardIds = [];
   settings.value.steps.forEach(step => {
@@ -182,35 +187,7 @@ async function initialSetup() {
     });
   });
 
-  for (let key in props) {
-    if (key === 'firstname') {
-      const firstNameField = settingsStore.getFirstFieldByType('formInputFirstName');
-
-      if (!firstNameField) {
-        continue;
-      }
-
-      answers[firstNameField.id] = props[key];
-    }
-    if (key === 'lastname') {
-      const lastNameField = settingsStore.getFirstFieldByType('formInputLastName');
-
-      if (!lastNameField) {
-        continue;
-      }
-
-      answers[lastNameField.id] = props[key];
-    }
-    if (key === 'email') {
-      const emailField = settingsStore.getFirstFieldByType('formInputEmail');
-
-      if (!emailField) {
-        continue;
-      }
-
-      answers[emailField.id] = props[key];
-    }
-  }
+  fillDefaultValues();
 
   if (cardIds && cardIds.length) {
     cardsStore.fetchCards(props.cardsApiUrl, cardIds);
@@ -299,9 +276,10 @@ function fromBackend(data) {
     timeString: data.time_string,
     certificate: data.certificate_url,
     resultDataUrl: data.post_url,
+    answerLogUrl: data.answer_log_url,
     sendCertificateUrl: data.send_certificate_url,
     monththeme_id: data.monththeme_id,
-    maxAttempts: data.max_attempts,
+    attempts: data.max_attempts,
     generationPDF: data.is_pdf_enabled,
     ymCount: data.ym_count,
     ratingLink: data.rating_link,
@@ -317,6 +295,7 @@ function fromBackend(data) {
     disableFirstScreen: data.disable_first_screen,
     disableLastScreen: data.disable_last_screen,
     result: data.result,
+    endScreen: data.end_screen,
   };
 }
 
@@ -344,13 +323,21 @@ function verifyStep() {
       return;
     }
 
-    if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion'].includes(
-        block.type)) {
+    if ([
+      'formRange',
+      'formInput',
+      'formCheckbox',
+      'formRadio',
+      'formSelect',
+      'formSelectRegion',
+      'question',
+    ].includes(block.type)) {
       if (!block.required) {
         return;
       }
 
       if (!answers[block.id]) {
+      // if (!answers[block.id] || (Array.isArray(answers[block.id]) && answers[block.id].length === 0)) {
         countError++;
       }
     }
@@ -361,7 +348,7 @@ function verifyStep() {
   return countError === 0;
 }
 
-function postData() {
+async function postData(enableScroll = true) {
   let position;
   if (localStorage.getItem('position-' + settings.value.id) === null) {
     position = 1;
@@ -377,6 +364,7 @@ function postData() {
   }
 
   const postObj = {
+    'secret_id': answersStore.submissionSecretId,
     'answers': answers,
     'position': position,
     'uuid': uuid,
@@ -386,15 +374,17 @@ function postData() {
     'score': progressStore.currentScore,
   };
 
-  fetch(settings.value.resultDataUrl, {
+  await fetch(settings.value.resultDataUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json;charset=utf-8' },
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+    },
     body: JSON.stringify(postObj),
   });
 
   const widget = document.getElementsByTagName('quiz-widget');
 
-  if (widget.length) {
+  if ((enableScroll || typeof enableScroll === 'undefined') && widget.length) {
     widget[0].scrollIntoView();
   }
 }
@@ -421,15 +411,112 @@ function setStartStage() {
   progressCalc();
 }
 
-function next() {
+async function next() {
+  try {
+    if (!settings.isDevMode) {
+      sendAnswerLog();
+    }
+  } catch (e) {
+    console.error('Error sending answer log:', e);
+  }
+
+  const step = settings.value.steps[currentStep.value];
+
+  if (step.bottomButton && step.bottomButton.type === 'WINDOW_DOM_EVENT') {
+    if (step.bottomButton.forceDataSubmit) {
+      await postData(false);
+    }
+
+    const event = new CustomEvent(step.bottomButton.domEventName, {
+      detail: {
+        settings: settings.value,
+        secretId: answersStore.submissionSecretId,
+        apiUrl: props.apiUrl,
+        step: step,
+        stepIndex: currentStep.value,
+      }
+    });
+
+    window.dispatchEvent(event);
+
+    return;
+  }
+
   currentStep.value++;
   progressCalc();
   setStep();
 
   if (currentStep.value === settings.value.steps.length) {
     progressStore.stage = 'final';
-    postData();
+    await postData();
   }
+}
+
+function sendAnswerLog() {
+  const currentAnswers = answersForCurrentStep();
+  const answerLog = {
+    quiz_id: settings.value.id,
+    score: progressStore.currentScore,
+    attempt_number: localStorage.getItem('position-' + settings.value.id),
+    step_number: currentStep.value,
+    answers: currentAnswers,
+    submission_secret_id: answersStore.submissionSecretId,
+    user_quiz_id: progressStore.userQuizId,
+  };
+
+  fetch(settings.value.answerLogUrl || 'https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz_analytics', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+    },
+    body: JSON.stringify(answerLog),
+  });
+
+}
+
+function answersForCurrentStep() {
+  const step = settings.value.steps[currentStep.value];
+
+  if (!step) {
+    return [];
+  }
+
+  let currentAnswers = [];
+
+  step.blocks.forEach(block => {
+    if (!checkIfBlockVisible(block)) {
+      return;
+    }
+
+    if ([
+      'formRange',
+      'formInput',
+      'formInputFirstName',
+      'formInputLastName',
+      'formInputEmail',
+      'formCheckbox',
+      'formRadio',
+      'formSelect',
+      'formSelectRegion',
+      'question',
+    ].includes(block.type)) {
+      if (block.multiple) {
+        currentAnswers.push({
+          id: block.id,
+          value: answers[block.id] || null,
+        });
+      } else {
+        currentAnswers.push({
+          id: block.id,
+          value: answers[block.id] || null,
+          has_visibility_conditions: (block.condition && block.condition.length > 0),
+          display_conditions_met: checkIfBlockVisible(block),
+        });
+      }
+    }
+  });
+
+  return currentAnswers;
 }
 
 function nextClick() {
@@ -439,14 +526,57 @@ function nextClick() {
 }
 
 function reloadQuiz() {
-  clearAnswers();
+  if (settings.value.endScreen && settings.value.endScreen.bottomButton && settings.value.endScreen.bottomButton.type === 'WINDOW_DOM_EVENT') {
+    const event = new CustomEvent(settings.value.endScreen.bottomButton.domEventName, {
+      detail: {
+        settings: settings.value,
+        secretId: answersStore.submissionSecretId,
+        apiUrl: props.apiUrl,
+        step: 'end_screen',
+        stepIndex: 'end_screen',
+      }
+    });
 
+    window.dispatchEvent(event);
+
+    return;
+  }
+
+  answersStore.submissionSecretId = generateRandom64CharacterString();
+  clearAnswers();
   currentStep.value = 0;
   setStartStage();
+  fillDefaultValues();
 }
 
 function clearAnswers() {
   answersStore.answers = {};
+}
+
+function fillDefaultValues() {
+  if (props.firstname) {
+    const firstNameField = settingsStore.getFirstFieldByType('formInputFirstName');
+
+    if (firstNameField) {
+      answersStore.answers[firstNameField.id] = props.firstname;
+    }
+  }
+
+  if (props.lastname) {
+    const lastNameField = settingsStore.getFirstFieldByType('formInputLastName');
+
+    if (lastNameField) {
+      answersStore.answers[lastNameField.id] = props.lastname;
+    }
+  }
+
+  if (props.email) {
+    const emailField = settingsStore.getFirstFieldByType('formInputEmail');
+
+    if (emailField) {
+      answersStore.answers[emailField.id] = props.email;
+    }
+  }
 }
 
 function checkIfBlockVisible(block) {
@@ -496,24 +626,23 @@ function checkIfBlockVisible(block) {
     } else if (condition.operator === 'notEqual') {
       conditionString += 'NOT' + '"' + condition.field + '"' + '="' + condition.field + 'FILTER"';
     }
-    // console.log(answers[condition.field])
-    // conditionString += answers[condition.field] + ' ' + (condition.operator === 'equal' ? '=' : ) + ' ' + condition.value;
+
     if (index !== block.conditions.list.length - 1) {
       if (block.conditions.list[index + 1] && block.conditions.list[index + 1].toPreviousFieldOperator) {
         conditionString += ' ' + block.conditions.list[index + 1].toPreviousFieldOperator.toUpperCase() + ' ';
       } else {
         conditionString += ' ';
       }
-      // if (condition.toPreviousFieldOperator) {
-      //   conditionString += ' ' + condition.toPreviousFieldOperator.toUpperCase() + ' ';
-      // } else {
-      // }
-      // conditionString += ' '
-
     }
   });
 
   return evaluateConditions(block.conditions.list, context);
+}
+
+function generateRandom64CharacterString() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 watch(answers, (newVal, oldVal) => {
@@ -539,7 +668,7 @@ document.addEventListener('keydown', e => {
       progressStore.stage = 'questions';
     } else {
       if (progressStore.stage === 'final') {
-        reloadQuiz();
+        // reloadQuiz();
       }
       if (progressStore.stage === 'questions') {
         nextClick();

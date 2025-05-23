@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 export const useSettingsStore = defineStore('settings', {
     state: () => ({
         settings: [],
+        userQuizId: null,
     }),
     actions: {
         setSettings(settings) {
