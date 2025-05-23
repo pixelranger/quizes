@@ -1,6 +1,5 @@
 <template>
   <div id="mf-quiz-main-container" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.containerType]: !settings.isDevMode}">
-
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -17,6 +16,7 @@
 
           <template v-if="stage === 'questions'">
             <questions
+                :key="currentStep"
                 :check-if-block-visible="checkIfBlockVisible"
                 :verify-step="verifyStep"
                 :current-step="currentStep"
@@ -29,7 +29,6 @@
           </template>
 
 
-
           <template v-if="stage === 'wrongAnswers'">
             <wrong-answers
                 :settings="settings"
@@ -40,31 +39,41 @@
           <div v-if="stepError" class="error-message">
             <span class="boundary">
               <svg viewBox="0 0 24 24" width="24" height="24">
-                <path clip-rule="evenodd" d="M16.336 18H7.003c-1.51 0-2.475-1.609-1.765-2.941l4.667-8.75c.753-1.412 2.776-1.412 3.53 0l4.666 8.75c.71 1.332-.255 2.94-1.765 2.94zM11.67 8.5a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zm0 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"></path>
+                <path clip-rule="evenodd"
+                      d="M16.336 18H7.003c-1.51 0-2.475-1.609-1.765-2.941l4.667-8.75c.753-1.412 2.776-1.412 3.53 0l4.666 8.75c.71 1.332-.255 2.94-1.765 2.94zM11.67 8.5a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zm0 7.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"
+                      fill-rule="evenodd"></path>
               </svg>
             </span>
             Вопросы помеченные звёздочкой * обязательны для заполнения
           </div>
         </div>
 
-        <div v-if="!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF))" class="quiz-inner-bottom">
+        <div
+            v-if="!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF))"
+            class="quiz-inner-bottom"
+        >
           <div class="button-container">
             <button v-if="stage === 'start'" class="q-btn next" @click="setStartStage()">Начать</button>
             <button v-if="stage === 'questions'" class="q-btn next" @click="nextClick()">
-              {{ settings.steps[currentStep].button || 'OK' }}
+              {{ settings.steps[currentStep]?.bottomButton?.text || 'OK' }}
             </button>
-            <button v-if="stage === 'wrongAnswers' && answersStore.getWrongAnswers(settings).length - 1 > answersStore.wrongAnswerScreenIndex" class="q-btn next" @click="answersStore.wrongAnswerScreenIndex++">
+            <button
+                v-if="stage === 'wrongAnswers' && answersStore.getWrongAnswers(settings).length - 1 > answersStore.wrongAnswerScreenIndex"
+                class="q-btn next" @click="answersStore.wrongAnswerScreenIndex++">
               Далее
             </button>
-            <button v-if="stage === 'wrongAnswers'" class="q-btn next" @click="progressStore.stage = 'final', answersStore.wrongAnswerScreenIndex = 0">
+            <button v-if="stage === 'wrongAnswers'" class="q-btn next"
+                    @click="progressStore.stage = 'final', answersStore.wrongAnswerScreenIndex = 0">
               Вернуться к результатам
             </button>
 
-            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">Повторить квиз</button>
-            <div v-if="settings.type === 1" class="info">Нажмите <b>Enter ↵</b></div>
-<!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
-<!--              Вернуться в начало-->
-<!--            </button>-->
+            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">
+              {{ settings?.endScreen?.bottomButton.text || 'Повторить квиз' }}
+            </button>
+            <div v-if="settings.type === 1 && stage !== 'final'" class="info">Нажмите <b>Enter ↵</b></div>
+            <!--            <button v-if="settings.type === 1 && settings.isDevMode" class="q-btn next" @click="progress = 'start', currentStep = 0, progressCalc()">-->
+            <!--              Вернуться в начало-->
+            <!--            </button>-->
           </div>
         </div>
       </div>
@@ -74,7 +83,7 @@
 
 <script setup>
 import { ref, defineProps, watch, computed } from 'vue';
-import html2pdf from "html2pdf.js/dist/html2pdf.bundle"
+import html2pdf from 'html2pdf.js/dist/html2pdf.bundle';
 import Final from '@/components/progress-steps/Final.vue';
 import Start from '@/components/progress-steps/Start.vue';
 import Questions from '@/components/progress-steps/Questions.vue';
@@ -83,6 +92,7 @@ import WrongAnswers from '@/components/progress-steps/WrongAnswers.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useProgressStore } from '@/stores/progress';
 import { useCardsStore } from '@/stores/cards';
+import { v4 } from 'uuid';
 
 const answersStore = useAnswersStore();
 const settingsStore = useSettingsStore();
@@ -91,25 +101,25 @@ const cardsStore = useCardsStore();
 
 const props = defineProps({
   firstname: {
-    type: String
+    type: String,
   },
   lastname: {
-    type: String
+    type: String,
   },
   email: {
-    type: String
+    type: String,
   },
   settings: {
-    type: String
+    type: String,
   },
   secretId: {
-    type: String
+    type: String,
   },
   apiUrl: {
-    type: String
+    type: String,
   },
   cardsApiUrl: {
-    type: String
+    type: String,
   },
 });
 
@@ -126,22 +136,8 @@ let refreshKey = ref(0);
 await initialSetup();
 
 async function initialSetup() {
-  for (let key in props) {
-    if (key === 'firstname') {
-      answers['name'] = props[key];
-    }
-    if (key === 'lastname') {
-      answers['last_name'] = props[key];
-    }
-    if (key === 'email') {
-      answers['email'] = props[key];
-    }
-  }
-
   if (props.secretId && props.apiUrl) {
-    await fetch(props.apiUrl + '/' + props.secretId)
-    .then(response => response.json())
-    .then(data => {
+    await fetch(props.apiUrl + '/' + props.secretId).then(response => response.json()).then(data => {
       settingsStore.settings = fromBackend(data);
     });
   } else if (props.settings) {
@@ -152,9 +148,12 @@ async function initialSetup() {
     }
   }
 
-  if (settings.value.type === 0) {
+  if (settings.value.type === 0 || settings.value.disableFirstScreen) {
     progressStore.stage = 'questions';
   }
+
+  answersStore.submissionSecretId = generateRandom64CharacterString();
+  progressStore.userQuizId = v4();
 
   let cardIds = [];
   settings.value.steps.forEach(step => {
@@ -188,6 +187,8 @@ async function initialSetup() {
     });
   });
 
+  fillDefaultValues();
+
   if (cardIds && cardIds.length) {
     cardsStore.fetchCards(props.cardsApiUrl, cardIds);
   }
@@ -197,7 +198,7 @@ async function initialSetup() {
 
   const refParam = get('ref');
 
-  if (refParam){
+  if (refParam) {
     localStorage.setItem('ref-' + settings.value.id, refParam);
   }
 
@@ -223,7 +224,18 @@ function updateAutomaticNumbering() {
         return;
       }
 
-      if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion', 'question'].includes(block.type)) {
+      if ([
+        'formRange',
+        'formInput',
+        'formInputFirstName',
+        'formInputLastName',
+        'formInputEmail',
+        'formCheckbox',
+        'formRadio',
+        'formSelect',
+        'formSelectRegion',
+        'question',
+      ].includes(block.type)) {
         if (!checkIfBlockVisible(block)) {
           return;
         }
@@ -264,9 +276,10 @@ function fromBackend(data) {
     timeString: data.time_string,
     certificate: data.certificate_url,
     resultDataUrl: data.post_url,
+    answerLogUrl: data.answer_log_url,
     sendCertificateUrl: data.send_certificate_url,
     monththeme_id: data.monththeme_id,
-    maxAttempts: data.max_attempts,
+    attempts: data.max_attempts,
     generationPDF: data.is_pdf_enabled,
     ymCount: data.ym_count,
     ratingLink: data.rating_link,
@@ -279,12 +292,15 @@ function fromBackend(data) {
     scoreCalculationMethod: data.score_calculation_method,
     rightAnswerScoreWeight: data.right_answer_score_weight,
     wrongAnswerScoreWeight: data.wrong_answer_score_weight,
+    disableFirstScreen: data.disable_first_screen,
+    disableLastScreen: data.disable_last_screen,
     result: data.result,
+    endScreen: data.end_screen,
   };
 }
 
-function get(name){
-  if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+function get(name) {
+  if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
     return decodeURIComponent(name[1]);
 }
 
@@ -307,12 +323,21 @@ function verifyStep() {
       return;
     }
 
-    if (['formRange', 'formInput', 'formCheckbox', 'formRadio', 'formSelect', 'formSelectRegion'].includes(block.type)) {
+    if ([
+      'formRange',
+      'formInput',
+      'formCheckbox',
+      'formRadio',
+      'formSelect',
+      'formSelectRegion',
+      'question',
+    ].includes(block.type)) {
       if (!block.required) {
         return;
       }
 
       if (!answers[block.id]) {
+      // if (!answers[block.id] || (Array.isArray(answers[block.id]) && answers[block.id].length === 0)) {
         countError++;
       }
     }
@@ -323,8 +348,7 @@ function verifyStep() {
   return countError === 0;
 }
 
-
-function postData() {
+async function postData(enableScroll = true) {
   let position;
   if (localStorage.getItem('position-' + settings.value.id) === null) {
     position = 1;
@@ -340,6 +364,7 @@ function postData() {
   }
 
   const postObj = {
+    'secret_id': answersStore.submissionSecretId,
     'answers': answers,
     'position': position,
     'uuid': uuid,
@@ -349,15 +374,17 @@ function postData() {
     'score': progressStore.currentScore,
   };
 
-  fetch(settings.value.resultDataUrl, {
+  await fetch(settings.value.resultDataUrl, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json;charset=utf-8'},
-    body: JSON.stringify(postObj)
-  })
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+    },
+    body: JSON.stringify(postObj),
+  });
 
   const widget = document.getElementsByTagName('quiz-widget');
 
-  if (widget.length) {
+  if ((enableScroll || typeof enableScroll === 'undefined') && widget.length) {
     widget[0].scrollIntoView();
   }
 }
@@ -365,7 +392,7 @@ function postData() {
 function setStep() {
   let url = new URL(window.location);
   url.searchParams.set('step', currentStep.value.toString());
-  history.pushState({}, "", url);
+  history.pushState({}, '', url);
 
   if (!url.pathname.startsWith('/virtual')) {
 
@@ -373,7 +400,7 @@ function setStep() {
     url.pathname = newPathname;
   }
 
-  if (typeof(ym) === 'function') {
+  if (typeof (ym) === 'function') {
     ym(settings.value.ymCount, 'hit', url.href);
   }
 }
@@ -384,15 +411,112 @@ function setStartStage() {
   progressCalc();
 }
 
-function next() {
+async function next() {
+  try {
+    if (!settings.isDevMode) {
+      sendAnswerLog();
+    }
+  } catch (e) {
+    console.error('Error sending answer log:', e);
+  }
+
+  const step = settings.value.steps[currentStep.value];
+
+  if (step.bottomButton && step.bottomButton.type === 'WINDOW_DOM_EVENT') {
+    if (step.bottomButton.forceDataSubmit) {
+      await postData(false);
+    }
+
+    const event = new CustomEvent(step.bottomButton.domEventName, {
+      detail: {
+        settings: settings.value,
+        secretId: answersStore.submissionSecretId,
+        apiUrl: props.apiUrl,
+        step: step,
+        stepIndex: currentStep.value,
+      }
+    });
+
+    window.dispatchEvent(event);
+
+    return;
+  }
+
   currentStep.value++;
   progressCalc();
   setStep();
 
   if (currentStep.value === settings.value.steps.length) {
     progressStore.stage = 'final';
-    postData();
+    await postData();
   }
+}
+
+function sendAnswerLog() {
+  const currentAnswers = answersForCurrentStep();
+  const answerLog = {
+    quiz_id: settings.value.id,
+    score: progressStore.currentScore,
+    attempt_number: localStorage.getItem('position-' + settings.value.id),
+    step_number: currentStep.value,
+    answers: currentAnswers,
+    submission_secret_id: answersStore.submissionSecretId,
+    user_quiz_id: progressStore.userQuizId,
+  };
+
+  fetch(settings.value.answerLogUrl || 'https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz_analytics', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8',
+    },
+    body: JSON.stringify(answerLog),
+  });
+
+}
+
+function answersForCurrentStep() {
+  const step = settings.value.steps[currentStep.value];
+
+  if (!step) {
+    return [];
+  }
+
+  let currentAnswers = [];
+
+  step.blocks.forEach(block => {
+    if (!checkIfBlockVisible(block)) {
+      return;
+    }
+
+    if ([
+      'formRange',
+      'formInput',
+      'formInputFirstName',
+      'formInputLastName',
+      'formInputEmail',
+      'formCheckbox',
+      'formRadio',
+      'formSelect',
+      'formSelectRegion',
+      'question',
+    ].includes(block.type)) {
+      if (block.multiple) {
+        currentAnswers.push({
+          id: block.id,
+          value: answers[block.id] || null,
+        });
+      } else {
+        currentAnswers.push({
+          id: block.id,
+          value: answers[block.id] || null,
+          has_visibility_conditions: (block.condition && block.condition.length > 0),
+          display_conditions_met: checkIfBlockVisible(block),
+        });
+      }
+    }
+  });
+
+  return currentAnswers;
 }
 
 function nextClick() {
@@ -402,16 +526,58 @@ function nextClick() {
 }
 
 function reloadQuiz() {
-  clearAnswers();
+  if (settings.value.endScreen && settings.value.endScreen.bottomButton && settings.value.endScreen.bottomButton.type === 'WINDOW_DOM_EVENT') {
+    const event = new CustomEvent(settings.value.endScreen.bottomButton.domEventName, {
+      detail: {
+        settings: settings.value,
+        secretId: answersStore.submissionSecretId,
+        apiUrl: props.apiUrl,
+        step: 'end_screen',
+        stepIndex: 'end_screen',
+      }
+    });
 
+    window.dispatchEvent(event);
+
+    return;
+  }
+
+  answersStore.submissionSecretId = generateRandom64CharacterString();
+  clearAnswers();
   currentStep.value = 0;
   setStartStage();
+  fillDefaultValues();
 }
 
 function clearAnswers() {
   answersStore.answers = {};
 }
 
+function fillDefaultValues() {
+  if (props.firstname) {
+    const firstNameField = settingsStore.getFirstFieldByType('formInputFirstName');
+
+    if (firstNameField) {
+      answersStore.answers[firstNameField.id] = props.firstname;
+    }
+  }
+
+  if (props.lastname) {
+    const lastNameField = settingsStore.getFirstFieldByType('formInputLastName');
+
+    if (lastNameField) {
+      answersStore.answers[lastNameField.id] = props.lastname;
+    }
+  }
+
+  if (props.email) {
+    const emailField = settingsStore.getFirstFieldByType('formInputEmail');
+
+    if (emailField) {
+      answersStore.answers[emailField.id] = props.email;
+    }
+  }
+}
 
 function checkIfBlockVisible(block) {
   if (!block.conditions) {
@@ -456,33 +622,32 @@ function checkIfBlockVisible(block) {
     context[condition.field + 'FILTER'] = condition.value;
     let fieldValue = answers[condition.field] || '';
     if (condition.operator === 'equal') {
-      conditionString += '"' + condition.field + '"' + '="' + condition.field + 'FILTER"' ;
+      conditionString += '"' + condition.field + '"' + '="' + condition.field + 'FILTER"';
     } else if (condition.operator === 'notEqual') {
-      conditionString += 'NOT' + '"' + condition.field + '"' + '="' + condition.field + 'FILTER"' ;
+      conditionString += 'NOT' + '"' + condition.field + '"' + '="' + condition.field + 'FILTER"';
     }
-    // console.log(answers[condition.field])
-    // conditionString += answers[condition.field] + ' ' + (condition.operator === 'equal' ? '=' : ) + ' ' + condition.value;
+
     if (index !== block.conditions.list.length - 1) {
       if (block.conditions.list[index + 1] && block.conditions.list[index + 1].toPreviousFieldOperator) {
         conditionString += ' ' + block.conditions.list[index + 1].toPreviousFieldOperator.toUpperCase() + ' ';
       } else {
-        conditionString += ' '
+        conditionString += ' ';
       }
-      // if (condition.toPreviousFieldOperator) {
-      //   conditionString += ' ' + condition.toPreviousFieldOperator.toUpperCase() + ' ';
-      // } else {
-      // }
-      // conditionString += ' '
-
     }
   });
 
   return evaluateConditions(block.conditions.list, context);
 }
 
+function generateRandom64CharacterString() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 watch(answers, (newVal, oldVal) => {
   updateAutomaticNumbering();
-}, {deep: true})
+}, { deep: true });
 
 watch([currentStep, () => progressStore.stage], (newVal, prevVal) => {
   if (newVal !== prevVal) {
@@ -503,7 +668,7 @@ document.addEventListener('keydown', e => {
       progressStore.stage = 'questions';
     } else {
       if (progressStore.stage === 'final') {
-        reloadQuiz();
+        // reloadQuiz();
       }
       if (progressStore.stage === 'questions') {
         nextClick();
@@ -512,31 +677,31 @@ document.addEventListener('keydown', e => {
   }
 });
 
-window.mfQuizSetStep = function (step) {
+window.mfQuizSetStep = function(step) {
   if (typeof settings.value.steps[step] === 'undefined') {
     return;
   }
   currentStep.value = step;
   progressStore.stage = 'questions';
   progressCalc();
-}
+};
 
-window.mfQuizSetStartScreen = function () {
+window.mfQuizSetStartScreen = function() {
   currentStep.value = 0;
   progressStore.stage = 'start';
   progressCalc();
-}
+};
 
-window.mfQuizSetEndScreen = function () {
+window.mfQuizSetEndScreen = function() {
   currentStep.value = 0;
   progressStore.stage = 'final';
   progressCalc();
-}
+};
 
-window.mfQuizRegisterNewSettings = function (newSettings) {
+window.mfQuizRegisterNewSettings = function(newSettings) {
   settingsStore.setSettings(JSON.parse(JSON.stringify(newSettings)));
   answers = {};
   updateAutomaticNumbering();
-}
+};
 
 </script>

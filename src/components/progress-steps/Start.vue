@@ -17,7 +17,7 @@ function checkAttempts() {
 </script>
 
 <template>
-  <div 
+  <div
 		class="start-container"
 		:class = "[settings.showStartImage && settings.startScreenImage ? 'grid_image' : '']"
 	>

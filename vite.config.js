@@ -18,6 +18,8 @@ export default defineConfig({
         style: './src/assets/styles/main.scss'
       },
       output: {
+        // dir: '/Users/ndolgushin/work/chimera/mf-backend-relaunch/public/assets/quiz',
+        // dir: '/Users/ndolgushin/work/chimera/mf-backend-relaunch/resources/js/quiz-editor/src/assets/quiz',
         inlineDynamicImports: false,
         entryFileNames: '[name].js',       // for JS files
         chunkFileNames: '[name].js',      // for code-splitted chunks
@@ -27,7 +29,6 @@ export default defineConfig({
   },
   // Configuration for development server and preview (will you use another entry pointe dev.js to handle this as normal SPA application )
   server: {
-    open: true,
     port: 5137,
     entry: fileURLToPath(new URL('./src/dev.js', import.meta.url))
   },

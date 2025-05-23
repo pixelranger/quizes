@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 
 export const useAnswersStore = defineStore('answers', {
     state: () => ({
+        submissionSecretId: null,
         answers: {},
         wrongAnswerScreenIndex: 0,
     }),
@@ -54,7 +55,7 @@ export const useAnswersStore = defineStore('answers', {
                             } else {
                                 if (this.answers[block.id]) {
                                     const correctAnswer = block.options.find(option => option.is_correct_answer);
-                                    if (correctAnswer.id !== this.answers[block.id]) {
+                                    if (correctAnswer && correctAnswer.id !== this.answers[block.id]) {
                                         wrongAnswersList.push(block);
                                     }
                                 } else {

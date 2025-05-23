@@ -1,7 +1,7 @@
 <script setup>
 
 import { useSettingsStore } from '@/stores/settings';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useAnswersStore } from '@/stores/answers';
 import { useProgressStore } from '@/stores/progress';
 import { numWord } from '../../utils/numWord';
@@ -10,10 +10,29 @@ import html2pdf from 'html2pdf.js/dist/html2pdf.bundle';
 const settingsStore = useSettingsStore();
 const answersStore = useAnswersStore();
 const progressStore = useProgressStore();
-const score = ref(0);
+const score = computed(() => progressStore.currentScore);
 const pdf = ref();
+const email = ref();
 const answers = computed(() => answersStore.answers);
 const settings = computed(() => settingsStore.settings);
+onMounted(() => {
+  const emailField = settingsStore.getFirstFieldByType('formInputEmail');
+
+  if (emailField) {
+    email.value = answers.value[emailField.id];
+  }
+})
+
+const firstName = computed(() => {
+  const field = settingsStore.getFirstFieldByType('formInputFirstName')
+  return field ? answers.value[field.id] : '';
+})
+
+const lastName = computed(() => {
+  const field = settingsStore.getFirstFieldByType('formInputLastName')
+  return field ? answers.value[field.id] : '';
+})
+
 
 function printPdf() {
   let options = {
@@ -44,11 +63,12 @@ function printPdf() {
 }
 
 async function sendPdf() {
+
   const pdf = await getPdfFile();
   const formData = new FormData();
   formData.append('method', 'sendMail');
   formData.append('certificate', new File([pdf], 'certificate'));
-  formData.append('email', answers['email']);
+  formData.append('email', email.value);
 
   fetch(settings.value.sendCertificateUrl, {
     method: "POST",
@@ -152,10 +172,10 @@ function stripHtmlTags(str) {
 </script>
 
 <template>
-  <div v-if="settings.type === 0" class="final-message-block">
+  <div v-if="settings.type === 0 || settings.disableLastScreen" class="final-message-block">
     <div class="final-message">Спасибо! Ваши данные учтены.</div>
   </div>
-  <div v-if="settings.type === 1" class="top_content">
+  <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="top_content">
     <div v-if="answers['name']" class="title">
       {{ answers['name'] }}, благодарим за прохождение теста.
     </div>
@@ -164,9 +184,9 @@ function stripHtmlTags(str) {
     </div>
     <div v-if="settings.hideDescriptionOnResult === false">
       <div class="score-message">Ваш результат: {{ progressStore.currentScore }}/{{ progressStore.maxScore }} {{ numWord(progressStore.currentScore, ['балл', 'балла', 'баллов']) }}</div>
-      <template v-for="el in settings.result">
-        <div 
-					v-if="progressStore.currentScore >= el.from && progressStore.currentScore <= el.to" 
+      <template v-for="(el, elementIndex) in settings.result">
+        <div
+					v-if="(!settings.isDevMode && progressStore.currentScore >= el.from && progressStore.currentScore <= el.to) || (settings.devData && (settings.devData.resultTextCurrentIndex == elementIndex || ((!settings.devData.resultTextCurrentIndex || settings.devData.resultTextCurrentIndex == -1) && elementIndex === 0)))"
 					class="score-description"
 					v-html="el.text"
 				></div>
@@ -177,7 +197,7 @@ function stripHtmlTags(str) {
     </a>
   </div>
 
-  <div v-if="settings.type === 1" class="result-grid" id="result-pdf">
+  <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="result-grid" id="result-pdf">
     <div class="result-grid-left md:col-span-6 xl:col-span-5">
       <div class="form text-left">
         <form action="">
@@ -207,7 +227,7 @@ function stripHtmlTags(str) {
                 <label>Отправить мне на электронную почту</label>
                 <div class="input-group">
                   <input
-                      v-model="answers['email']"
+                      v-model="email"
                       id="quiz-pdf-email"
                       name="pdfEmail"
                       type="email"
@@ -258,14 +278,14 @@ function stripHtmlTags(str) {
                 <div id="pdf-wrap" class="pdf-wrap" ref="pdf">
                   <div class="name-box">
                     <div class="fullName">
-                      {{ answers['name'] }}
+                      {{ firstName }}
                     </div>
                     <div class="lastName">
-                      {{ answers['last_name'] }}
+                      {{ lastName }}
                     </div>
                   </div>
                   <div class="image-wrap">
-                    <img :src="settings.certificate" width="792" height="1118" alt="">
+                    <img :src="settings.certificate" width="792" height="1118" alt="" crossorigin="*">
                   </div>
                 </div>
               </section>
