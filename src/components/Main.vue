@@ -93,11 +93,13 @@ import { useSettingsStore } from '@/stores/settings';
 import { useProgressStore } from '@/stores/progress';
 import { useCardsStore } from '@/stores/cards';
 import { v4 } from 'uuid';
+import { useCourseCardsStore } from '@/stores/courseCards';
 
 const answersStore = useAnswersStore();
 const settingsStore = useSettingsStore();
 const progressStore = useProgressStore();
 const cardsStore = useCardsStore();
+const courseCardsStore = useCourseCardsStore();
 
 const props = defineProps({
   firstname: {
@@ -118,6 +120,9 @@ const props = defineProps({
   apiUrl: {
     type: String,
   },
+  baseApiUrl: {
+    type: String,
+  },
   cardsApiUrl: {
     type: String,
   },
@@ -132,10 +137,22 @@ let animateStep = ref(false);
 let answers = answersStore.answers;
 /** костыль, найти решение */
 let refreshKey = ref(0);
+let trackingData = ref({
+  tracking_code: null,
+  utm_source: null,
+  utm_medium: null,
+  utm_campaign: null,
+  utm_content: null,
+  utm_term: null,
+})
 
 await initialSetup();
 
 async function initialSetup() {
+  if (typeof props.baseApiUrl === 'undefined' || props.baseApiUrl === '') {
+    props.baseApiUrl = 'https://app-prod.xn--80apaohbc3aw9e.xn--p1ai';
+  }
+
   if (props.secretId && props.apiUrl) {
     await fetch(props.apiUrl + '/' + props.secretId).then(response => response.json()).then(data => {
       settingsStore.settings = fromBackend(data);
@@ -156,6 +173,7 @@ async function initialSetup() {
   progressStore.userQuizId = v4();
 
   let cardIds = [];
+  let courseCardIds = [];
   settings.value.steps.forEach(step => {
     if (!step.blocks) {
       return;
@@ -175,6 +193,10 @@ async function initialSetup() {
         if (block.wrong_answer_card) {
           cardIds.push(block.wrong_answer_card.value);
         }
+
+        if (block.wrong_answer_course_module_element) {
+          courseCardIds.push(block.wrong_answer_course_module_element.id);
+        }
       }
 
       if (block.type === 'formRange') {
@@ -188,9 +210,14 @@ async function initialSetup() {
   });
 
   fillDefaultValues();
+  fillTrackingData();
 
   if (cardIds && cardIds.length) {
     cardsStore.fetchCards(props.cardsApiUrl, cardIds);
+  }
+
+  if (courseCardIds && courseCardIds.length) {
+    courseCardsStore.fetchCards(props.baseApiUrl, courseCardIds);
   }
 
   updateAutomaticNumbering();
@@ -372,7 +399,14 @@ async function postData(enableScroll = true) {
     'quiz_id': settings.value.id,
     'ref': localStorage.getItem('ref-' + settings.value.id),
     'score': progressStore.currentScore,
+    ...trackingData.value,
   };
+
+  const widget = document.getElementsByTagName('quiz-widget');
+
+  if ((enableScroll || typeof enableScroll === 'undefined') && widget.length) {
+    widget[0].scrollIntoView();
+  }
 
   await fetch(settings.value.resultDataUrl, {
     method: 'POST',
@@ -382,11 +416,6 @@ async function postData(enableScroll = true) {
     body: JSON.stringify(postObj),
   });
 
-  const widget = document.getElementsByTagName('quiz-widget');
-
-  if ((enableScroll || typeof enableScroll === 'undefined') && widget.length) {
-    widget[0].scrollIntoView();
-  }
 }
 
 function setStep() {
@@ -551,6 +580,23 @@ function reloadQuiz() {
 
 function clearAnswers() {
   answersStore.answers = {};
+}
+
+function fillTrackingData() {
+  trackingData.value.tracking_code = get('quiz_tracking_code') || null;
+  trackingData.value.utm_source = get('utm_source') || null;
+  trackingData.value.utm_medium = get('utm_medium') || null;
+  trackingData.value.utm_campaign = get('utm_campaign') || null;
+  trackingData.value.utm_content = get('utm_content') || null;
+  trackingData.value.utm_term = get('utm_term') || null;
+
+  if (trackingData.value.tracking_code) {
+    localStorage.setItem('quiz_tracking_code-' + settings.value.id, trackingData.value.tracking_code);
+  }
+
+  if (!trackingData.value.tracking_code && localStorage.getItem('quiz_tracking_code-' + settings.value.id)) {
+    trackingData.value.tracking_code = localStorage.getItem('quiz_tracking_code-' + settings.value.id);
+  }
 }
 
 function fillDefaultValues() {
