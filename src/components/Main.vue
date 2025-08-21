@@ -321,6 +321,7 @@ function fromBackend(data) {
     wrongAnswerScoreWeight: data.wrong_answer_score_weight,
     disableFirstScreen: data.disable_first_screen,
     disableLastScreen: data.disable_last_screen,
+    forceDisableSelectedText: data.force_disable_selected_text,
     result: data.result,
     endScreen: data.end_screen,
   };
