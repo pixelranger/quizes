@@ -160,7 +160,8 @@ body {
 
 .quiz-content {
 	.parts {
-		padding: 2rem 1rem 1rem;
+		// padding: 2rem 1rem 1rem;
+		padding: 0;
 		flex-grow: 1;
 
 		display: flex;
@@ -1075,7 +1076,9 @@ body {
 .question {
 	@apply my-6;
 	.question-title {
-		@apply text-xl;
+		// @apply text-xl;
+		font-size: var(--quiz-question-title-size, 1.75rem);
+		@apply mb-2;
 
 		.required {
 			@apply text-red-600;
