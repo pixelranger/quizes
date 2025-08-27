@@ -3,9 +3,11 @@
 import { computed } from 'vue';
 import { useAnswersStore } from '@/stores/answers';
 import { useCardsStore } from '@/stores/cards';
+import { useCourseCardsStore } from '@/stores/courseCards';
 
 const answersStore = useAnswersStore();
 const cardsStore = useCardsStore();
+const courseCardsStore = useCourseCardsStore();
 const props = defineProps({
   settings: {
     type: Object,
@@ -17,6 +19,10 @@ const wrongAnswers = computed(() => answersStore.getWrongAnswers(props.settings)
 const currentWrongAnswer = computed(() => wrongAnswers.value.find((_, index) => index === answersStore.wrongAnswerScreenIndex));
 
 const card = computed(() => {
+  if (currentWrongAnswer.value.wrong_answer_course_module_element) {
+    return courseCardsStore.getCardById(currentWrongAnswer.value.wrong_answer_course_module_element.id);
+  }
+
   if (currentWrongAnswer.value.wrong_answer_card) {
     return cardsStore.getCardById(currentWrongAnswer.value.wrong_answer_card.value);
   }
@@ -46,8 +52,8 @@ function isSelectedAnswer(optionId) {
     </div>
     <div class="quiz-content answers-show-mode">
 			<div class="answers-grid">
-				<div 
-					v-for="option in wrongAnswers[answersStore.wrongAnswerScreenIndex].options" 
+				<div
+					v-for="option in wrongAnswers[answersStore.wrongAnswerScreenIndex].options"
 					class="option"
 				>
 					<label :class="[option.is_correct_answer ? 'correct' : 'incorrect', isSelectedAnswer(option.id) ? 'selected': '']">
@@ -64,7 +70,7 @@ function isSelectedAnswer(optionId) {
 								</svg>
 							</div>
 							<div v-else class="key" />
-							
+
 							<div class="">{{option.title}}</div>
 						</div>
 					</label>
@@ -87,8 +93,16 @@ function isSelectedAnswer(optionId) {
 				<div v-if="card.image" class="card-content-image">
 					<img :src="card.image" alt="">
 				</div>
-				<div v-html="card.content" class="card-content-text" />
+				<div v-else-if="card.image_w_1024_h_576" class="card-content-image">
+					<img :src="card.image_w_1024_h_576" alt="">
+				</div>
+				<div v-if="card.content" v-html="card.content" class="card-content-text" />
+				<div v-else-if="card.text" v-html="card.text" class="card-content-text" />
 			</div>
+
+      <a :href="card.client_url" class="wrong-answers link">
+        Перейти к режиму обучения
+      </a>
     </div>
 
 

@@ -5,7 +5,8 @@
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
         :settings="settings2"
-        secretId="3a560140-b128-4e99-87be-9115387e3693"
+        secretId="f835807e-6363-4c57-9b4d-b798930fd38f"
+        baseApiUrl="https://mfbr.test"
         apiUrl="https://mfbr.test/api/quizzes/quizzes"
         cardsApiUrl="https://mfbr.test/api/quizzes/cards"
     /> -->

@@ -134,6 +134,23 @@ function shuffle(array, blockId) {
   return array;
 }
 
+function blockHasCorrectAnswer(block) {
+  if (block.options && block.options.length > 0) {
+    return block.options.some(option => option.is_correct_answer);
+  }
+
+  return false;
+}
+
+function checkIsCorrectAnswer(block, id) {
+  if (block.options && block.options.length > 0) {
+    const option = block.options.find((option) => option.id === id);
+    return option && option.is_correct_answer;
+  }
+
+  return false;
+}
+
 </script>
 
 <template>
@@ -364,7 +381,11 @@ function shuffle(array, blockId) {
                 <label
                     v-if="option.title"
                     :for="'radio' + currentStep + optionIndex"
-                    :class="{'animate': checkAnimate(block, option.id)}"
+                    :class="{
+                      'animate': checkAnimate(block, option.id),
+                      'incorrect': blockHasCorrectAnswer(block) && !checkIsCorrectAnswer(block, option.id) && checkAnimate(block, option.id),
+                      'correct': blockHasCorrectAnswer(block) && checkIsCorrectAnswer(block, option.id) && checkAnimate(block, option.id),
+                    }"
                 >
                   <div class="option-container">
                     <img v-if="option.image" :src="option.image" class="option-image" alt="">
