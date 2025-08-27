@@ -1,7 +1,6 @@
 <template>
   <suspense>
-
-    <Main
+    <!-- <Main
         :firstname="'Иван'"
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
@@ -9,7 +8,7 @@
         secretId="3a560140-b128-4e99-87be-9115387e3693"
         apiUrl="https://mfbr.test/api/quizzes/quizzes"
         cardsApiUrl="https://mfbr.test/api/quizzes/cards"
-    />
+    /> -->
 
 		<!-- Тестовый на 2 вопроса -->
     <!-- <Main
@@ -21,26 +20,34 @@
         apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
         cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
     /> -->
-    <!-- <Main
+
+
+		<!-- 
+			a52c155c-7de4-4bc5-a92e-6ee144773277
+			658f9a57-8246-4f6b-8786-be42c6a8431b
+			ebda2e5b-b13a-4f63-ad04-ac55df9d3c54
+			f5934a0e-29af-4d5b-b71e-7a4be6062eed 
+		-->
+
+    <Main
         :firstname="'Иван'"
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
         :settings="settings2"
-        secretId="6ef7e048-2e95-4011-a431-28ec3c86b968"
+        secretId="f5934a0e-29af-4d5b-b71e-7a4be6062eed"
         apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
         cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
-    /> -->
-<!--    <Main-->
-<!--        :firstname="'Иван'"-->
-<!--        :lastname="'Петров'"-->
-<!--        :email="'ivan@gmail.com'"-->
-<!--        :settings="settings2"-->
-<!--        secretId="4b3a0cdd-e847-4468-8cbf-762e564ae6ef"-->
-<!--        apiUrl="https://app-prod.xn&#45;&#45;80apaohbc3aw9e.xn&#45;&#45;p1ai/api/quizzes/quizzes"-->
-<!--        cardsApiUrl="https://app-prod.xn&#45;&#45;80apaohbc3aw9e.xn&#45;&#45;p1ai/api/quizzes/cards"-->
-<!--    />-->
+    />
+   <!-- <Main
+       :firstname="'Иван'"
+       :lastname="'Петров'"
+       :email="'ivan@gmail.com'"
+       :settings="settings2"
+       secretId="4b3a0cdd-e847-4468-8cbf-762e564ae6ef"
+       apiUrl="https://app-prod.xn&#45;&#45;80apaohbc3aw9e.xn&#45;&#45;p1ai/api/quizzes/quizzes"
+       cardsApiUrl="https://app-prod.xn&#45;&#45;80apaohbc3aw9e.xn&#45;&#45;p1ai/api/quizzes/cards"
+   /> -->
   </suspense>
-
 </template>
 
 <script setup>
