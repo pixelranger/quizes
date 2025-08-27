@@ -15,6 +15,7 @@ const pdf = ref();
 const email = ref();
 const answers = computed(() => answersStore.answers);
 const settings = computed(() => settingsStore.settings);
+
 onMounted(() => {
   const emailField = settingsStore.getFirstFieldByType('formInputEmail');
 
@@ -33,7 +34,24 @@ const lastName = computed(() => {
   return field ? answers.value[field.id] : '';
 })
 
+const defaultScoreMessage = 'Ваш результат: {{currentScore}}/{{maxScore}} {{[currentScore|балл,балла,баллов]}}'
+const scoreMessage = computed(() => {
+  let scoreMessage = defaultScoreMessage;
+  if (settings.value.endScreen && settings.value.endScreen.scoreMessage) {
+    scoreMessage = settings.value.endScreen.scoreMessage;
+  }
+  let newScoreMessage = scoreMessage
+    .replace('{{currentScore}}', progressStore.currentScore)
+    .replace('{{maxScore}}', progressStore.maxScore);
 
+  newScoreMessage = newScoreMessage.replace(/{{\[([^\]]+)\]}}/g, (match, p1) => {
+    const words = p1.split(',');
+    return numWord(progressStore.currentScore, words);
+  });
+
+  console.log(newScoreMessage);
+  return newScoreMessage;
+})
 function printPdf() {
   let options = {
     margin: 0,
@@ -183,7 +201,7 @@ function stripHtmlTags(str) {
       Благодарим за прохождение теста.
     </div>
     <div v-if="settings.hideDescriptionOnResult === false">
-      <div class="score-message">Ваш результат: {{ progressStore.currentScore }}/{{ progressStore.maxScore }} {{ numWord(progressStore.currentScore, ['балл', 'балла', 'баллов']) }}</div>
+      <div class="score-message">{{ scoreMessage }}</div>
       <template v-for="(el, elementIndex) in settings.result">
         <div
 					v-if="(!settings.isDevMode && progressStore.currentScore >= el.from && progressStore.currentScore <= el.to) || (settings.devData && (settings.devData.resultTextCurrentIndex == elementIndex || ((!settings.devData.resultTextCurrentIndex || settings.devData.resultTextCurrentIndex == -1) && elementIndex === 0)))"
@@ -192,7 +210,7 @@ function stripHtmlTags(str) {
 				></div>
       </template>
     </div>
-    <a v-if="answersStore.getWrongAnswers(settings).length > 0" @click.prevent="progressStore.stage = 'wrongAnswers'" class="wrong-answers link">
+    <a v-if="!settings?.endScreen?.disableWrongAnswersView && answersStore.getWrongAnswers(settings).length > 0" @click.prevent="progressStore.stage = 'wrongAnswers'" class="wrong-answers link">
       Режим просмотра неправильных ответов
     </a>
   </div>
