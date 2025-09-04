@@ -9,7 +9,7 @@ export const useCourseCardsStore = defineStore('courseCards', {
             return this.cards.find(card => card.id === cardId);
         },
         fetchCards(apiUrl, ids) {
-            return fetch(`${apiUrl}/api/fingram/courses/modules/elements/?ids=${ids.join(',')}`)
+            return fetch(`${apiUrl}/api/fingram/courses/elements/?ids=${ids.join(',')}`)
                 .then(response => response.json())
                 .then(data => {
                     this.cards = data.data;

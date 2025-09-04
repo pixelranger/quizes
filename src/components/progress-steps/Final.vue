@@ -34,6 +34,34 @@ const lastName = computed(() => {
   return field ? answers.value[field.id] : '';
 })
 
+const getPdfText = computed(() => {
+  let defaultText = 'Как вы хотите получить результат?';
+
+  if (typeof settings?.value?.endScreen?.getPdfText === 'undefined') {
+    return defaultText;
+  }
+
+  if (!settings?.value?.endScreen?.getPdfText || settings?.value?.endScreen?.getPdfText === '') {
+    return null;
+  }
+
+  return settings?.value?.endScreen?.getPdfText;
+})
+
+const thankYouMessage = computed(() => {
+  let defaultText = 'Благодарим за прохождение теста!';
+
+  if (typeof settings?.value?.endScreen?.thankYouMessage === 'undefined') {
+    return defaultText;
+  }
+
+  if (!settings?.value?.endScreen?.thankYouMessage) {
+    return null;
+  }
+
+  return settings?.value?.endScreen?.thankYouMessage;
+})
+
 const defaultScoreMessage = 'Ваш результат: {{currentScore}}/{{maxScore}} {{[currentScore|балл,балла,баллов]}}'
 const scoreMessage = computed(() => {
   let scoreMessage = defaultScoreMessage;
@@ -194,11 +222,8 @@ function stripHtmlTags(str) {
     <div class="final-message">Спасибо! Ваши данные учтены.</div>
   </div>
   <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="top_content">
-    <div v-if="answers['name']" class="title">
-      {{ answers['name'] }}, благодарим за прохождение теста.
-    </div>
-    <div v-else class="title">
-      Благодарим за прохождение теста.
+    <div v-if="thankYouMessage" class="title">
+      {{ thankYouMessage }}
     </div>
     <div v-if="settings.hideDescriptionOnResult === false">
       <div class="score-message">{{ scoreMessage }}</div>
@@ -235,7 +260,7 @@ function stripHtmlTags(str) {
             </div>
 
             <div id="printPdf">
-              <p class="description mt-4 mb-3">Как вы хотите получить результат?</p>
+              <p v-if="getPdfText" class="description mt-4 mb-3">{{ getPdfText }}</p>
               <div class="block-button-wrap">
                 <button type="button" class="q-btn" @click="printPdf()">
                   Распечатать сейчас (pdf)

@@ -7,6 +7,10 @@
         </div>
       </div>
       <div class="quiz-inner-container inner-content" :class="{'animate': animateStep}">
+        <div v-if="settings.showStepCounter">
+          Шаг {{ currentStep + 1 }} из {{ settings.steps.length }}
+        </div>
+        <div v-if="settings.steps[currentStep] && settings.steps[currentStep].topInfoMessage"><div v-html="settings.steps[currentStep].topInfoMessage" /></div>
         <div class="parts">
           <template v-if="stage === 'start'">
             <start
@@ -322,6 +326,7 @@ function fromBackend(data) {
     disableFirstScreen: data.disable_first_screen,
     disableLastScreen: data.disable_last_screen,
     forceDisableSelectedText: data.force_disable_selected_text,
+    showStepCounter: data.show_step_counter,
     result: data.result,
     endScreen: data.end_screen,
   };
