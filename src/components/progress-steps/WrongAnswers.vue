@@ -100,9 +100,9 @@ function isSelectedAnswer(optionId) {
 				<div v-else-if="card.text" v-html="card.text" class="card-content-text" />
 			</div>
 
-      <a :href="card.client_url" class="wrong-answers link">
-        Перейти к режиму обучения
-      </a>
+<!--      <a :href="card.client_url" class="wrong-answers link">-->
+<!--        Перейти к режиму обучения-->
+<!--      </a>-->
     </div>
 
 

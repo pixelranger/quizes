@@ -18,7 +18,7 @@ export default defineConfig({
         style: './src/assets/styles/main.scss'
       },
       output: {
-        // dir: '/Users/ndolgushin/work/chimera/mf-backend-relaunch/public/assets/quiz',
+        dir: '/Users/ndolgushin/work/chimera/mf-backend-relaunch/public/assets/quiz',
         // dir: '/Users/ndolgushin/work/chimera/mf-backend-relaunch/resources/js/quiz-editor/src/assets/quiz',
         inlineDynamicImports: false,
         entryFileNames: '[name].js',       // for JS files

@@ -405,7 +405,7 @@ function checkIsCorrectAnswer(block, id) {
                     :checked="answers[block.id] === option.id"
                 >
                 <div
-                    v-if="checkAnswerText(block, option.id) && option.selectedText"
+                    v-if="checkAnswerText(block, option.id) && option.selectedText && !settings.forceDisableSelectedText"
                     class="selected-answer-text"
                     v-html="option.selectedText"
                 />

@@ -1,5 +1,5 @@
 <template>
-  <div id="mf-quiz-main-container" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.containerType]: !settings.isDevMode}">
+  <div id="mf-quiz-main-container" ref="mainContainer" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.containerType]: !settings.isDevMode}">
     <div class="quiz-content">
       <div v-if="settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
@@ -7,7 +7,14 @@
         </div>
       </div>
       <div class="quiz-inner-container inner-content" :class="{'animate': animateStep}">
-        <div class="parts">
+        <div v-if="settings.showStepCounter">
+          Шаг {{ currentStep + 1 }} из {{ settings.steps.length }}
+        </div>
+        <div v-if="settings.steps[currentStep] && settings.steps[currentStep].topInfoMessage"><div v-html="settings.steps[currentStep].topInfoMessage" /></div>
+        <div v-if="checkAttempts()" class="parts">
+          <div class="quiz-error" v-html="noAttemptsLeftText" />
+        </div>
+        <div v-if="!checkAttempts()" class="parts">
           <template v-if="stage === 'start'">
             <start
                 :settings="settings"
@@ -49,7 +56,7 @@
         </div>
 
         <div
-            v-if="!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF))"
+            v-if="stage === 'wrongAnswers' || (!checkAttempts() && (stage !== 'final' || (settings.type === 1 && progressStore.currentScore < settings.resultPDF)))"
             class="quiz-inner-bottom"
         >
           <div class="button-container">
@@ -94,6 +101,7 @@ import { useProgressStore } from '@/stores/progress';
 import { useCardsStore } from '@/stores/cards';
 import { v4 } from 'uuid';
 import { useCourseCardsStore } from '@/stores/courseCards';
+import { numWord } from '@/utils/numWord';
 
 const answersStore = useAnswersStore();
 const settingsStore = useSettingsStore();
@@ -130,10 +138,12 @@ const props = defineProps({
 
 let settings = computed(() => settingsStore.settings);
 let stage = computed(() => progressStore.stage);
+let noAttemptsLeftText = computed(() => settings.value.description_fail_attempts ? settings.value.description_fail_attempts : ('Вы исчерпали ' + settings.value.attempts + ' ' + numWord(settings.value.attempts, ['попытку', 'попытки', 'попыток']) + '. Прохождение теста недоступно.'));
 let currentStep = ref(0);
 let progressValue = ref(0);
 let stepError = ref(false);
 let animateStep = ref(false);
+let mainContainer = ref(null);
 let answers = answersStore.answers;
 /** костыль, найти решение */
 let refreshKey = ref(0);
@@ -295,7 +305,7 @@ function fromBackend(data) {
     containerType: data.container_type,
     title: data.title,
     type: data.type,
-    description_fail_attempts: data.failed_attemps_text,
+    description_fail_attempts: data.failed_attempts_text,
     startScreenTitle: data.start_screen_title,
     startScreenDescription: data.start_screen_description,
     startScreenImage: data.start_screen_image,
@@ -321,14 +331,25 @@ function fromBackend(data) {
     wrongAnswerScoreWeight: data.wrong_answer_score_weight,
     disableFirstScreen: data.disable_first_screen,
     disableLastScreen: data.disable_last_screen,
+    forceDisableSelectedText: data.force_disable_selected_text,
+    showStepCounter: data.show_step_counter,
     result: data.result,
     endScreen: data.end_screen,
+    forceCookieTrackingCode: data.force_cookie_tracking_code,
+    cookieTrackingCodeName: data.cookie_tracking_code_name,
   };
 }
 
 function get(name) {
   if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
     return decodeURIComponent(name[1]);
+}
+
+function getCookieValue(name) {
+  const matches = document.cookie.match(new RegExp(
+    '(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
 function checkAttempts() {
@@ -402,10 +423,11 @@ async function postData(enableScroll = true) {
     ...trackingData.value,
   };
 
-  const widget = document.getElementsByTagName('quiz-widget');
-
-  if ((enableScroll || typeof enableScroll === 'undefined') && widget.length) {
-    widget[0].scrollIntoView();
+  if ((enableScroll || typeof enableScroll === 'undefined') && mainContainer.value) {
+    const rect = mainContainer.value.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const targetY = rect.top + scrollTop - 70;
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
   }
 
   await fetch(settings.value.resultDataUrl, {
@@ -491,6 +513,7 @@ function sendAnswerLog() {
     answers: currentAnswers,
     submission_secret_id: answersStore.submissionSecretId,
     user_quiz_id: progressStore.userQuizId,
+    tracking_code: trackingData.value.tracking_code,
   };
 
   fetch(settings.value.answerLogUrl || 'https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz_analytics', {
@@ -583,7 +606,12 @@ function clearAnswers() {
 }
 
 function fillTrackingData() {
-  trackingData.value.tracking_code = get('quiz_tracking_code') || null;
+  if (settings.value.forceCookieTrackingCode) {
+    trackingData.value.tracking_code = getCookieValue(settings.value.cookieTrackingCodeName) || null;
+  } else {
+    trackingData.value.tracking_code = get('quiz_tracking_code') || null;
+  }
+
   trackingData.value.utm_source = get('utm_source') || null;
   trackingData.value.utm_medium = get('utm_medium') || null;
   trackingData.value.utm_campaign = get('utm_campaign') || null;
