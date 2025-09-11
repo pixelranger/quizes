@@ -13,23 +13,45 @@ const progressStore = useProgressStore();
 const score = computed(() => progressStore.currentScore);
 const pdf = ref();
 const email = ref();
+const pdfFirstName = ref();
+const pdfLastName = ref();
 const answers = computed(() => answersStore.answers);
 const settings = computed(() => settingsStore.settings);
 
 onMounted(() => {
   const emailField = settingsStore.getFirstFieldByType('formInputEmail');
+  const firstNameField = settingsStore.getFirstFieldByType('formInputFirstName');
+  const lastNameField = settingsStore.getFirstFieldByType('formInputLastName');
+
+  if (firstNameField) {
+    pdfFirstName.value = answers.value[firstNameField.id];
+  }
+
+  if (lastNameField) {
+    pdfLastName.value = answers.value[lastNameField.id];
+  }
 
   if (emailField) {
     email.value = answers.value[emailField.id];
   }
+
 })
 
 const firstName = computed(() => {
+  if (pdfFirstName.value) {
+    return pdfFirstName.value;
+  }
+
   const field = settingsStore.getFirstFieldByType('formInputFirstName')
   return field ? answers.value[field.id] : '';
 })
 
 const lastName = computed(() => {
+  console.log('pdfLastName', pdfLastName.value);
+  if (pdfLastName.value) {
+    return pdfLastName.value;
+  }
+
   const field = settingsStore.getFirstFieldByType('formInputLastName')
   return field ? answers.value[field.id] : '';
 })
@@ -72,8 +94,8 @@ const scoreMessage = computed(() => {
     .replace('{{currentScore}}', progressStore.currentScore)
     .replace('{{maxScore}}', progressStore.maxScore);
 
-  newScoreMessage = newScoreMessage.replace(/{{\[([^\]]+)\]}}/g, (match, p1) => {
-    const words = p1.split(',');
+  newScoreMessage = newScoreMessage.replace(/{{\[(.*)\|([^\]]+)\]}}/g, (match, p1, p2) => {
+    const words = p2.split(',');
     return numWord(progressStore.currentScore, words);
   });
 
@@ -222,11 +244,9 @@ function stripHtmlTags(str) {
     <div class="final-message">Спасибо! Ваши данные учтены.</div>
   </div>
   <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="top_content">
-    <div v-if="thankYouMessage" class="title">
-      {{ thankYouMessage }}
-    </div>
+    <div v-if="thankYouMessage" class="title" v-html="thankYouMessage" />
     <div v-if="settings.hideDescriptionOnResult === false">
-      <div class="score-message">{{ scoreMessage }}</div>
+      <div v-if="scoreMessage" class="score-message" v-html="scoreMessage" />
       <template v-for="(el, elementIndex) in settings.result">
         <div
 					v-if="(!settings.isDevMode && progressStore.currentScore >= el.from && progressStore.currentScore <= el.to) || (settings.devData && (settings.devData.resultTextCurrentIndex == elementIndex || ((!settings.devData.resultTextCurrentIndex || settings.devData.resultTextCurrentIndex == -1) && elementIndex === 0)))"
@@ -245,22 +265,24 @@ function stripHtmlTags(str) {
       <div class="form text-left">
         <form action="">
           <div v-if="settings.generationPDF && score >= settings.resultPDF">
-            <div class="mb-3" style="display:none;">
-              <label class="block mb-1">
-                Имя
-              </label>
-              <input id="quiz-pdf-name" name="pdfName" type="text" :value="answers['name']" class="form-control w-full">
-            </div>
-            <div class="mb-3" style="display:none;">
-              <label class="block mb-1">
-                Фамилия
-              </label>
-              <input id="quiz-pdf-last-name" name="pdfLastName" type="text" :value="answers['last_name']"
-                     class="form-control w-full">
+            <div v-if="settings?.endScreen?.enablePdfNameFields" class="pdf-name-fields">
+              <div class="mb-3">
+                <label class="block mb-1">
+                  Имя
+                </label>
+                <input v-model="pdfFirstName" id="quiz-pdf-name" name="pdfName" type="text" class="form-control w-full">
+              </div>
+              <div class="mb-3">
+                <label class="block mb-1">
+                  Фамилия
+                </label>
+                <input v-model="pdfLastName" id="quiz-pdf-last-name" name="pdfLastName" type="text"
+                       class="form-control w-full">
+              </div>
             </div>
 
             <div id="printPdf">
-              <p v-if="getPdfText" class="description mt-4 mb-3">{{ getPdfText }}</p>
+              <p v-if="getPdfText" class="description mt-4 mb-3" v-html="getPdfText" />
               <div class="block-button-wrap">
                 <button type="button" class="q-btn" @click="printPdf()">
                   Распечатать сейчас (pdf)
