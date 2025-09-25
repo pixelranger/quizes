@@ -1,20 +1,20 @@
 <template>
   <div id="mf-quiz-main-container" ref="mainContainer" class="quiz-container" :key="refreshKey" :class="{['type-' + settings.containerType]: !settings.isDevMode}">
     <div class="quiz-content">
-      <div v-if="settings.type === 1" class="quiz-progress-container">
+      <div v-if="!checkAttempts() && settings.type === 1" class="quiz-progress-container">
         <div class="quiz-progress">
           <div class="value" :style="{'width': progressValue + '%'}"></div>
         </div>
       </div>
       <div class="quiz-inner-container inner-content" :class="{'animate': animateStep}">
-        <div v-if="settings.showStepCounter">
+        <div v-if="!checkAttempts() && settings.showStepCounter">
           Шаг {{ currentStep + 1 }} из {{ settings.steps.length }}
         </div>
-        <div v-if="settings.steps[currentStep] && settings.steps[currentStep].topInfoMessage"><div v-html="settings.steps[currentStep].topInfoMessage" /></div>
-        <div v-if="checkAttempts()" class="parts">
+        <div v-if="!checkAttempts() && settings.steps[currentStep] && settings.steps[currentStep].topInfoMessage"><div v-html="settings.steps[currentStep].topInfoMessage" /></div>
+        <div v-if="checkAttempts() && !['final', 'wrongAnswers'].includes(stage)" class="quiz-attempts-error-container">
           <div class="quiz-error" v-html="noAttemptsLeftText" />
         </div>
-        <div v-if="!checkAttempts()" class="parts">
+        <div v-if="!checkAttempts() || ['final', 'wrongAnswers'].includes(stage)" class="parts">
           <template v-if="stage === 'start'">
             <start
                 :settings="settings"
@@ -74,7 +74,7 @@
               Вернуться к результатам
             </button>
 
-            <button v-if="settings.type === 1 && stage === 'final'" class="q-btn next" @click="reloadQuiz()">
+            <button v-if="settings.type === 1 && stage === 'final' && !checkAttempts()" class="q-btn next" @click="reloadQuiz()">
               {{ settings?.endScreen?.bottomButton.text || 'Повторить квиз' }}
             </button>
             <div v-if="settings.type === 1 && stage !== 'final'" class="info">Нажмите <b>Enter ↵</b></div>
@@ -148,6 +148,7 @@ let answers = answersStore.answers;
 /** костыль, найти решение */
 let refreshKey = ref(0);
 let trackingData = ref({
+  user_unique_code: null,
   tracking_code: null,
   utm_source: null,
   utm_medium: null,
@@ -354,7 +355,16 @@ function getCookieValue(name) {
 
 function checkAttempts() {
   const position = localStorage.getItem('position-' + settings.value.id);
-  return parseInt(position) > settings.value.attempts && position !== null;
+  return parseInt(position) >= settings.value.attempts && position !== null;
+}
+
+function getAttemptsLeft() {
+  const position = localStorage.getItem('position-' + settings.value.id);
+  if (position === null) {
+    return settings.value.attempts;
+  }
+
+  return settings.value.attempts - parseInt(position);
 }
 
 function progressCalc() {
@@ -514,6 +524,7 @@ function sendAnswerLog() {
     submission_secret_id: answersStore.submissionSecretId,
     user_quiz_id: progressStore.userQuizId,
     tracking_code: trackingData.value.tracking_code,
+    user_unique_code: trackingData.value.user_unique_code,
   };
 
   fetch(settings.value.answerLogUrl || 'https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/index_min.php?action=quiz_analytics', {
@@ -624,6 +635,15 @@ function fillTrackingData() {
 
   if (!trackingData.value.tracking_code && localStorage.getItem('quiz_tracking_code-' + settings.value.id)) {
     trackingData.value.tracking_code = localStorage.getItem('quiz_tracking_code-' + settings.value.id);
+  }
+
+  const userTrackingCode = getCookieValue('mf_quiz_user_tracking_code');
+  if (userTrackingCode) {
+    trackingData.value.user_unique_code = userTrackingCode;
+  } else {
+    const newCode = generateRandom64CharacterString();
+    document.cookie = 'mf_quiz_user_tracking_code=' + newCode + '; path=/; max-age=' + (60 * 60 * 24 * 365 * 2);
+    trackingData.value.user_unique_code = newCode;
   }
 }
 
