@@ -45,7 +45,7 @@ function isSelectedAnswer(optionId) {
 <template>
   <div v-if="wrongAnswers[answersStore.wrongAnswerScreenIndex]">
     <div class="title">
-      Вопрос №{{ wrongAnswers[answersStore.wrongAnswerScreenIndex].label || wrongAnswers[answersStore.wrongAnswerScreenIndex].title }}
+      {{ wrongAnswers[answersStore.wrongAnswerScreenIndex].label || wrongAnswers[answersStore.wrongAnswerScreenIndex].title }}
     </div>
     <div class="subtitle">
       Варианты ответов:
