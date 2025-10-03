@@ -7,7 +7,7 @@
         </div>
       </div>
       <div class="quiz-inner-container inner-content" :class="{'animate': animateStep}">
-        <div v-if="!checkAttempts() && settings.showStepCounter">
+        <div v-if="!checkAttempts() && settings.showStepCounter" class="mb-3">
           Шаг {{ currentStep + 1 }} из {{ settings.steps.length }}
         </div>
         <div v-if="!checkAttempts() && settings.steps[currentStep] && settings.steps[currentStep].topInfoMessage"><div v-html="settings.steps[currentStep].topInfoMessage" /></div>
