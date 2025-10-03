@@ -358,7 +358,7 @@ function checkIsCorrectAnswer(block, id) {
                 {{ block.label || block.title }}
                 <span v-if="block.required" class="required">*</span>
               </label>
-              <div class="">{{ block.multiple ? 'Выберите один или несколько вариантов ответа' : 'Выберите один вариант ответа' }}</div>
+              <div class="question-help">{{ block.multiple ? 'Выберите один или несколько вариантов ответа' : 'Выберите один вариант ответа' }}</div>
               <div
                   v-if="block.description"
                   class="description"

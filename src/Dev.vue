@@ -35,7 +35,7 @@
         :lastname="'Петров'"
         :email="'ivan@gmail.com'"
         :settings="settings2"
-        secretId="f5934a0e-29af-4d5b-b71e-7a4be6062eed"
+        secretId="e14baa02-1410-4511-8978-f5cb64baeb4f"
         apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
         cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
     />

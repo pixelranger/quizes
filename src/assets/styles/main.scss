@@ -22,7 +22,7 @@
 	--quiz-start-title-size: 1.75rem;
 	--quiz-start-description-size: 1.25rem;
 
-	--quiz-question-title-size: 1.75rem;
+	--quiz-question-title-size: 1.25rem;
 	--quiz-question-description-size: 1.25rem;
 	--quiz-question-explanation-size: 1rem;
 
@@ -43,7 +43,7 @@
 body {
 	margin: 0;
 	padding: 0;
-	font-family: var(var(--quiz-font-family), inherit);
+	font-family: var(--quiz-font-family, inherit);
 }
 
 
@@ -111,7 +111,7 @@ body {
 .quiz-inner-container	{
 	/* Параметры контейнера */
 	width: 100%;
-	max-width: 1200px;
+	max-width: 1224px;
 	margin: 0 auto;
 }
 
@@ -154,7 +154,7 @@ body {
 	/* rgba(49,183,188,.3); */
 
 	/* Левый и правый ьфкпшт устанавливаются как отступ у контейнера */
-	margin: 0 1rem;
+	// margin: 0 1rem;
 }
 
 .quiz-progress .value {
@@ -187,6 +187,7 @@ body {
 	bottom: 0;
 	/* height: 6rem; */
 
+	margin-top: 1.5rem;
 	padding: 1rem;
 
 	background-color: #f3f4f6e6;
@@ -884,7 +885,7 @@ body {
 .quiz-content {
 	.inner-content {
 		.title {
-			font-size: 1.25rem;
+			font-size: var(--quiz-question-title-size, 1.25rem);
 			line-height: 1.4;
 			color: rgb(1, 41, 65);
 			overflow-wrap: break-word;
@@ -892,9 +893,6 @@ body {
 
 			/* text-align: center; */
 
-			@media all and (min-width: 1288px) {
-				font-size: 1.75rem;
-			}
 		}
 
 		.subtitle {
@@ -904,13 +902,10 @@ body {
 		.description {
 			margin: 1.5rem 0;
 
+			font-size: var(--quiz-question-description-size, 1.15rem);
 			color: var(--quiz-color-description);
 			font-size: 1rem;
 			line-height: 1.4;
-
-			@media all and (min-width: 1288px) {
-				font-size: 1.25rem;
-			}
 		}
 
 		.score-message {
@@ -1098,9 +1093,13 @@ body {
 
 .question-container {
 	.title {
+		// font-size: var(--quiz-question-title-size, 1.75rem);
 		.required {
 			@apply text-red-600;
 		}
+	}
+	.question-help {
+		@apply mt-3;
 	}
 }
 
