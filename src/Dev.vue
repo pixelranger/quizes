@@ -30,15 +30,25 @@
 			f5934a0e-29af-4d5b-b71e-7a4be6062eed 
 		-->
 
+    <!-- <Main
+			:firstname="'Иван'"
+			:lastname="'Петров'"
+			:email="'ivan@gmail.com'"
+			:settings="settings2"
+			secretId="e14baa02-1410-4511-8978-f5cb64baeb4f"
+			apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
+			cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
+    /> -->
     <Main
-        :firstname="'Иван'"
-        :lastname="'Петров'"
-        :email="'ivan@gmail.com'"
-        :settings="settings2"
-        secretId="e14baa02-1410-4511-8978-f5cb64baeb4f"
-        apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
-        cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
+			:firstname="'Иван'"
+			:lastname="'Петров'"
+			:email="'ivan@gmail.com'"
+			:settings="settings2"
+			secretId="752a6b1f-7807-4cdf-b498-423f8aa86e6c"
+			apiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/quizzes"
+			cardsApiUrl="https://app-prod.xn--80apaohbc3aw9e.xn--p1ai/api/quizzes/cards"
     />
+
    <!-- <Main
        :firstname="'Иван'"
        :lastname="'Петров'"

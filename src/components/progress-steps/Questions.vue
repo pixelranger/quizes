@@ -162,12 +162,14 @@ function checkIsCorrectAnswer(block, id) {
           <template v-if="settings.steps[currentStep].required">*</template>
         </div>
       </template>
+
       <template v-if="block.type === 'paragraph'">
         <div
             class="description"
             v-html="block.value"
         />
       </template>
+
       <template v-if="block.type === 'info'">
         <div class="title">
           {{ block.title }}
@@ -178,6 +180,7 @@ function checkIsCorrectAnswer(block, id) {
             v-html="block.description"
         />
       </template>
+
       <template v-if="['formInput', 'formInputFirstName', 'formInputLastName', 'formInputEmail', 'formInputMiddleName'].includes(block.type)">
         <div class="question">
           <label v-if="block.label" class="question-title">
@@ -201,6 +204,7 @@ function checkIsCorrectAnswer(block, id) {
           </div>
         </div>
       </template>
+
       <template v-if="['formSelect', 'formSelectRegion'].includes(block.type)">
         <div class="question">
           <label v-if="block.label" class="question-title">
@@ -219,22 +223,38 @@ function checkIsCorrectAnswer(block, id) {
           </div>
         </div>
       </template>
+
       <template v-if="block.type === 'formRange'">
-        <div class="field field-range">
-          <label v-if="block.label">
+				<div class="question">
+          <label v-if="block.label" class="question-title">
             {{ block.label }}
-            <template v-if="block.required">*</template>
+            <span v-if="block.required" class="required">*</span>
           </label>
-          <input class="input-range"
-                 type="range"
-                 :name="block.name"
-                 :min="block.min"
-                 :max="block.max"
-                 v-model="answers[block.id]"
-                 @input="inputChange(block.id, $event)">
-          <span class="input-range-val">{{ answers[block.id] }}</span>
-        </div>
+					<div class="question-help">
+						question-help: 1-10, где 1 – совершенно не была полезна, 10 – максимально полезна
+					</div>					
+					<div class="field field-range">
+						<div class="input-range-selector">
+							<div class="input-range-selector-label input-range-selector-min">
+								{{ block.min }}
+							</div>
+							<div class="input-range-selector-label input-range-selector-max">
+								{{ block.max }}
+							</div>
+							<input class="input-range"
+								type="range"
+								:name="block.name"
+								:min="block.min"
+								:max="block.max"
+								v-model="answers[block.id]"
+								@input="inputChange(block.id, $event)"
+							>
+						</div>
+						<span class="input-range-val">{{ answers[block.id] }}</span>
+					</div>
+				</div>
       </template>
+
       <template v-if="block.type === 'formRadio'">
         <div class="question">
           <label v-if="block.label" class="question-title">
@@ -258,11 +278,11 @@ function checkIsCorrectAnswer(block, id) {
           <div v-if="block.other" class="field field-radio">
             <div class="radio-item">
               <input class="input-radio"
-                     type="radio"
-                     :id="'radio' + currentStep + blockIndex + '__$OTHER'"
-                     :name="block.id"
-                     :value="'__$OTHER__'"
-                     @change="inputChange(block.id, $event)"
+								type="radio"
+								:id="'radio' + currentStep + blockIndex + '__$OTHER'"
+								:name="block.id"
+								:value="'__$OTHER__'"
+								@change="inputChange(block.id, $event)"
               >
               <label :for="'radio' + currentStep + blockIndex + '__$OTHER'">
                 Другое
@@ -278,11 +298,12 @@ function checkIsCorrectAnswer(block, id) {
             <label>
             </label>
             <input class="input-text"
-                   type="text"
-                   :name="block.id"
-                   :placeholder="block.placeholder"
-                   :value="answers[block.id + '__$OTHER']"
-                   @input="inputChange(block.id  + '__$OTHER', $event)">
+							type="text"
+							:name="block.id"
+							:placeholder="block.placeholder"
+							:value="answers[block.id + '__$OTHER']"
+							@input="inputChange(block.id  + '__$OTHER', $event)"
+						>
             <div v-if="block.example" class="example">
               Пример: <i>{{ block.example }}</i>
             </div>
@@ -346,7 +367,6 @@ function checkIsCorrectAnswer(block, id) {
         </div>
       </template>
 
-
       <template v-if="block.type === 'question'">
         <div class="top_content">
           <div
@@ -360,9 +380,9 @@ function checkIsCorrectAnswer(block, id) {
               </label>
               <div class="question-help">{{ block.multiple ? 'Выберите один или несколько вариантов ответа' : 'Выберите один вариант ответа' }}</div>
               <div
-                  v-if="block.description"
-                  class="description"
-                  v-html="block.description"
+								v-if="block.description"
+								class="description"
+								v-html="block.description"
               />
             </div>
             <div class="image-part">
@@ -372,11 +392,12 @@ function checkIsCorrectAnswer(block, id) {
           </div>
 
           <div
-              class="answers-grid"
-              :class="block.view"
+						class="answers-grid"
+						:class="block.view"
           >
             <template v-for="(option, optionIndex) in block.randomize ? shuffle(block.options, block.id) : block.options"
-                      :key="option.id">
+							:key="option.id"
+						>
               <div class="option" @click="questionOptionClick(option, block)">
                 <label
                     v-if="option.title"
