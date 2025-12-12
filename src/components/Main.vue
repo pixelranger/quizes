@@ -394,7 +394,7 @@ function verifyStep() {
         return;
       }
 
-      if (!answers[block.id]) {
+      if (!answers[block.id] || (answers[block.id] === '__$OTHER__' && !answers[block.id + '__$OTHER'])) {
       // if (!answers[block.id] || (Array.isArray(answers[block.id]) && answers[block.id].length === 0)) {
         countError++;
       }
