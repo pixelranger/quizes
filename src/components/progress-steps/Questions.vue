@@ -230,9 +230,9 @@ function checkIsCorrectAnswer(block, id) {
             {{ block.label }}
             <span v-if="block.required" class="required">*</span>
           </label>
-					<div class="question-help">
-						question-help: 1-10, где 1 – совершенно не была полезна, 10 – максимально полезна
-					</div>					
+          <div v-if="block.help" class="question-help">
+            {{ block.help }}
+          </div>
 					<div class="field field-range">
 						<div class="input-range-selector">
 							<div class="input-range-selector-label input-range-selector-min">
@@ -241,11 +241,13 @@ function checkIsCorrectAnswer(block, id) {
 							<div class="input-range-selector-label input-range-selector-max">
 								{{ block.max }}
 							</div>
-							<input class="input-range"
+              <input
+                class="input-range"
 								type="range"
 								:name="block.name"
 								:min="block.min"
 								:max="block.max"
+                :step="block.step || 1"
 								v-model="answers[block.id]"
 								@input="inputChange(block.id, $event)"
 							>
