@@ -4,7 +4,6 @@
 */
 
 :root {
-	--quiz-font-family: '';
 	--quiz-container-bg: #ffffff;
 	--quiz-color-primary: #31b7bc;
 	--quiz-color-primary-hover: #217c7f;
@@ -43,7 +42,7 @@
 body {
 	margin: 0;
 	padding: 0;
-	font-family: var(--quiz-font-family, inherit);
+	font-family: inherit;
 }
 
 
@@ -1230,4 +1229,8 @@ body {
 	.card-content-text {
 		@apply max-w-3xl text-lg;
 	}
+}
+
+.quiz-content .wrong-answers-view-button {
+	margin: 1rem 0;
 }

@@ -57,7 +57,7 @@ function checkboxChange(name, e) {
 
 function questionOptionClick(option, block) {
   if (block.multiple) {
-    if (!answers[block.id]) {
+    if (block.allow_change && !answers[block.id]) {
       answers[block.id] = [];
       return;
     }
@@ -67,7 +67,7 @@ function questionOptionClick(option, block) {
       return;
     }
 
-    if (answers[block.id].includes(option.id)) {
+    if (block.allow_change && answers[block.id].includes(option.id)) {
       answers[block.id] = answers[block.id].filter(el => el !== option.id);
       return;
     }

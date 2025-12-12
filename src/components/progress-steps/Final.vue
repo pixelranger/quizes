@@ -255,9 +255,11 @@ function stripHtmlTags(str) {
 				></div>
       </template>
     </div>
-    <a v-if="!settings?.endScreen?.disableWrongAnswersView && answersStore.getWrongAnswers(settings).length > 0" @click.prevent="progressStore.stage = 'wrongAnswers'" class="wrong-answers link">
-      Режим просмотра неправильных ответов
-    </a>
+    <div class="wrong-answers-view-button">
+      <a v-if="!settings?.endScreen?.disableWrongAnswersView && answersStore.getWrongAnswers(settings).length > 0" @click.prevent="progressStore.stage = 'wrongAnswers'" class="wrong-answers link">
+        Режим просмотра неправильных ответов
+      </a>
+    </div>
   </div>
 
   <div v-if="settings.type === 1 && typeof settings.disableLastScreen !== 'undefined' && !settings.disableLastScreen" class="result-grid" id="result-pdf">
