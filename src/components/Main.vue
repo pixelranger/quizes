@@ -191,16 +191,7 @@ async function initialSetup() {
     }
 
     step.blocks.forEach(block => {
-      if (!block.type) {
-        console.log('Block type is not defined', block);
-        return;
-      }
-
       if (block.type === 'question') {
-        if (block.multiple) {
-          answers[block.id] = [];
-        }
-
         if (block.wrong_answer_card) {
           cardIds.push(block.wrong_answer_card.value);
         }
@@ -208,14 +199,6 @@ async function initialSetup() {
         if (block.wrong_answer_course_module_element) {
           courseCardIds.push(block.wrong_answer_course_module_element.id);
         }
-      }
-
-      if (block.type === 'formRange') {
-        answers[block.id] = block.value || block.min;
-      }
-
-      if (block.type === 'formCheckbox') {
-        answers[block.id] = [];
       }
     });
   });
@@ -394,7 +377,7 @@ function verifyStep() {
         return;
       }
 
-      if (!answers[block.id] || (answers[block.id] === '__$OTHER__' && !answers[block.id + '__$OTHER'])) {
+      if (!answersStore.answers[block.id] || (answersStore.answers[block.id] === '__$OTHER__' && !answersStore.answers[block.id + '__$OTHER'])) {
       // if (!answers[block.id] || (Array.isArray(answers[block.id]) && answers[block.id].length === 0)) {
         countError++;
       }
@@ -566,12 +549,12 @@ function answersForCurrentStep() {
       if (block.multiple) {
         currentAnswers.push({
           id: block.id,
-          value: answers[block.id] || null,
+          value: answersStore.answers[block.id] || null,
         });
       } else {
         currentAnswers.push({
           id: block.id,
-          value: answers[block.id] || null,
+          value: answersStore.answers[block.id] || null,
           has_visibility_conditions: (block.condition && block.condition.length > 0),
           display_conditions_met: checkIfBlockVisible(block),
         });
@@ -648,6 +631,33 @@ function fillTrackingData() {
 }
 
 function fillDefaultValues() {
+  settings.value.steps.forEach(step => {
+    if (!step.blocks) {
+      return;
+    }
+
+    step.blocks.forEach(block => {
+      if (!block.type) {
+        console.log('Block type is not defined', block);
+        return;
+      }
+
+      if (block.type === 'question') {
+        if (block.multiple) {
+          answersStore.answers[block.id] = [];
+        }
+      }
+
+      if (block.type === 'formRange') {
+        answersStore.answers[block.id] = block.value || block.min;
+      }
+
+      if (block.type === 'formCheckbox') {
+        answersStore.answers[block.id] = [];
+      }
+    });
+  });
+
   if (props.firstname) {
     const firstNameField = settingsStore.getFirstFieldByType('formInputFirstName');
 
@@ -712,7 +722,7 @@ function checkIfBlockVisible(block) {
 
   const context = {};
   block.conditions.list.forEach((condition, index) => {
-    context[condition.field] = answers[condition.field] || '';
+    context[condition.field] = answersStore.answers[condition.field] || '';
     context[condition.field + 'FILTER'] = condition.value;
     let fieldValue = answers[condition.field] || '';
     if (condition.operator === 'equal') {
